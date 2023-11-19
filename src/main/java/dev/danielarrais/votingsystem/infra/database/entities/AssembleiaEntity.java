@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "ASSEMBLEIAS")
-public class Assembleia {
+public class AssembleiaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,5 +25,5 @@ public class Assembleia {
     private LocalDateTime dataEncerramento;
 
     @OneToMany(mappedBy = "assembleia")
-    private List<Pauta> pautas;
+    private List<PautaEntity> pautas;
 }
