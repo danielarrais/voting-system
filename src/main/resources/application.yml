@@ -1,0 +1,7 @@
+spring:
+  data:
+    mongodb:
+      host: ${MONGO_DB_HOST:localhost}
+      username: ${MONGO_DB_USER:pass}
+      database: ${MONGO_DB_DATABASE:voting-system}
+      port: 27017
