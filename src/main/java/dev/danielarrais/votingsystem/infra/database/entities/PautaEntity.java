@@ -3,6 +3,8 @@ package dev.danielarrais.votingsystem.infra.database.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Builder
 @Setter
 @Getter
@@ -24,4 +26,7 @@ public class PautaEntity {
 
     @ManyToOne
     private AssembleiaEntity assembleia;
+
+    @OneToMany(mappedBy = "pauta")
+    private List<VotoEntity> votos;
 }

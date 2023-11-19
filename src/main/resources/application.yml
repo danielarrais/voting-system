@@ -4,7 +4,7 @@ spring:
     default-schema: voting-system
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
   datasource:
     url: jdbc:mysql://${DB_HOST:localhost}:3306/voting-system?createDatabaseIfNotExist=true&serverTimezone=UTC&useSSL=false
     username: root

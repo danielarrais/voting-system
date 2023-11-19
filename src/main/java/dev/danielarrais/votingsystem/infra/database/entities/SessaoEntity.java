@@ -26,9 +26,6 @@ public class SessaoEntity {
     @Setter(AccessLevel.NONE)
     private LocalDateTime dataEncerramento;
 
-    @OneToMany(mappedBy = "sessao")
-    private List<VotoEntity> votos;
-
     @OneToOne
     private PautaEntity pauta;
 }
