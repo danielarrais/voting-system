@@ -4,7 +4,6 @@ import dev.danielarrais.votingsystem.application.exceptions.CPFNaoAutorizadoAVot
 import dev.danielarrais.votingsystem.application.exceptions.PautaNaoEncontrada;
 import dev.danielarrais.votingsystem.application.exceptions.PautaSemSessaoAberta;
 import dev.danielarrais.votingsystem.application.exceptions.PautaSemSessaoRegistrada;
-import dev.danielarrais.votingsystem.domain.Sessao;
 import dev.danielarrais.votingsystem.infra.database.entities.SessaoEntity;
 import dev.danielarrais.votingsystem.infra.database.entities.VotoEntity;
 import dev.danielarrais.votingsystem.infra.database.repositories.PautaRepository;
@@ -19,7 +18,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class VotarService {
+public class RegistrarVotoService {
     private final InvertextClient invertextClient;
     private final PautaRepository pautaRepository;
     private final SessaoRepository sessaoRepository;
