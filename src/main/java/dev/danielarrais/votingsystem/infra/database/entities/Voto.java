@@ -1,19 +1,20 @@
 package dev.danielarrais.votingsystem.infra.database.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.Builder;
-import lombok.Getter;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Builder
+@Setter
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "VOTOS")
 public class Voto {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -24,4 +25,7 @@ public class Voto {
 
     @Column(nullable = false)
     private Boolean voto;
+
+    @ManyToOne
+    private Sessao sessao;
 }
