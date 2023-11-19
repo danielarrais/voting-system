@@ -34,7 +34,7 @@ public class CriarSessaoService {
     private void validarSePautaExiste(Long pautaId) {
         boolean pautaExiste = pautaRepository.existsById(pautaId);
         if (!pautaExiste) {
-            throw new PautaNaoEncontrada("Pauta de ID " + pautaId + "Não encontrada");
+            throw new PautaNaoEncontrada(pautaId);
         }
     }
 
