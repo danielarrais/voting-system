@@ -24,7 +24,4 @@ public class PautaEntity {
 
     @ManyToOne
     private AssembleiaEntity assembleia;
-
-    @OneToOne
-    private SessaoEntity sessao;
 }

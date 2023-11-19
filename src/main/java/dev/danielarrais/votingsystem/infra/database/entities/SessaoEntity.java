@@ -1,5 +1,6 @@
 package dev.danielarrais.votingsystem.infra.database.entities;
 
+import dev.danielarrais.votingsystem.domain.Pauta;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,4 +28,7 @@ public class SessaoEntity {
 
     @OneToMany(mappedBy = "sessao")
     private List<VotoEntity> votos;
+
+    @OneToOne
+    private PautaEntity pauta;
 }
