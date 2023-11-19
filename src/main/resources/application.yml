@@ -1,4 +1,7 @@
 spring:
+  liquibase:
+    change-log: db/changelog/db.changelog-master.yml
+    default-schema: voting-system
   jpa:
     hibernate:
       ddl-auto: create
