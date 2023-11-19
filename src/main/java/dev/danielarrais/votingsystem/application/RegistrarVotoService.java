@@ -1,10 +1,8 @@
 package dev.danielarrais.votingsystem.application;
 
-import dev.danielarrais.votingsystem.application.exceptions.CPFNaoAutorizadoAVotar;
-import dev.danielarrais.votingsystem.application.exceptions.PautaNaoEncontrada;
-import dev.danielarrais.votingsystem.application.exceptions.PautaSemSessaoAberta;
-import dev.danielarrais.votingsystem.application.exceptions.PautaSemSessaoRegistrada;
-import dev.danielarrais.votingsystem.infra.database.entities.SessaoEntity;
+import dev.danielarrais.votingsystem.api.dto.request.VotoRequest;
+import dev.danielarrais.votingsystem.application.exceptions.*;
+import dev.danielarrais.votingsystem.infra.database.entities.PautaEntity;
 import dev.danielarrais.votingsystem.infra.database.entities.VotoEntity;
 import dev.danielarrais.votingsystem.infra.database.repositories.PautaRepository;
 import dev.danielarrais.votingsystem.infra.database.repositories.SessaoRepository;
@@ -24,23 +22,32 @@ public class RegistrarVotoService {
     private final SessaoRepository sessaoRepository;
     private final VotoRepository votoRepository;
 
-    public void votar(Long pautaId, String CPF, boolean voto) {
+    public void votar(Long pautaId, VotoRequest votoRequest) {
         LocalDateTime horaDoVoto = LocalDateTime.now();
 
-        validaAutorizacaoDeVoto(CPF);
+        validaAutorizacaoDeVoto(votoRequest.getCpf());
         validaSePautaExiste(pautaId);
         validaSeSessaoDaPautaEstarAberta(pautaId, horaDoVoto);
+        validaSeJaVotou(pautaId, votoRequest.getCpf());
 
-        SessaoEntity sessao = getSessaoDaPauta(pautaId);
+        PautaEntity pautaEntity = pautaRepository.findById(pautaId).get();
 
         VotoEntity votoEntity = VotoEntity.builder()
-                .sessao(sessao)
-                .voto(voto)
-                .CPF(CPF)
+                .pauta(pautaEntity)
+                .voto(votoRequest.getVoto())
+                .cpf(votoRequest.getCpf())
                 .hora(horaDoVoto)
                 .build();
 
         votoRepository.save(votoEntity);
+    }
+
+    private void validaSeJaVotou(Long pautaId, String cpf) {
+        boolean jaVotou = votoRepository.existsByPautaIdAndCpf(pautaId, cpf);
+
+        if (jaVotou) {
+            throw new VotoJaRegistrado(cpf);
+        }
     }
 
     private void validaSePautaExiste(Long pautaId) {
@@ -76,10 +83,5 @@ public class RegistrarVotoService {
         }
 
         return false;
-    }
-
-    private SessaoEntity getSessaoDaPauta(Long pautaId) {
-        return sessaoRepository.findByPautaId(pautaId)
-                .orElseThrow(() -> new PautaSemSessaoRegistrada(pautaId));
     }
 }
