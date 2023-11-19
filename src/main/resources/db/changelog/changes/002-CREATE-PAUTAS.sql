@@ -5,4 +5,4 @@ create table pautas
     descricao     varchar(255) not null,
     titulo        varchar(255) not null,
     foreign key (assembleia_id) references assembleias (id)
-) ENGINE=INNODB;
+);

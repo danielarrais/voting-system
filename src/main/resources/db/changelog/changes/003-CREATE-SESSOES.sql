@@ -5,4 +5,4 @@ create table sessoes
     data_inicio       datetime(6) null,
     pauta_id          int null,
     foreign key (pauta_id) references pautas (id)
-) ENGINE=INNODB;
+);

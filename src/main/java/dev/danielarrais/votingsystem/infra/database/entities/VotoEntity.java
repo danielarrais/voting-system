@@ -18,7 +18,7 @@ public class VotoEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String CPF;
+    private String cpf;
 
     @Column(nullable = false)
     private LocalDateTime hora;
@@ -27,5 +27,5 @@ public class VotoEntity {
     private Boolean voto;
 
     @ManyToOne
-    private SessaoEntity sessao;
+    private PautaEntity pauta;
 }
