@@ -1,17 +1,23 @@
 package dev.danielarrais.votingsystem.infra.database.entities;
 
-import jakarta.persistence.OneToMany;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
+@Setter
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "SESSOES")
 public class Sessao {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Setter(AccessLevel.NONE)
@@ -20,6 +26,6 @@ public class Sessao {
     @Setter(AccessLevel.NONE)
     private LocalDateTime dataEncerramento;
 
-    @OneToMany
+    @OneToMany(mappedBy = "sessao")
     private List<Voto> votos;
 }

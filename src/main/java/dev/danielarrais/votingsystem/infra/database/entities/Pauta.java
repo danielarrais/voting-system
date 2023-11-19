@@ -1,15 +1,19 @@
 package dev.danielarrais.votingsystem.infra.database.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
+@Builder
 @Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "PAUTAS")
 public class Pauta {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  Long id;
 
     @Column(nullable = false)

@@ -2,19 +2,21 @@ package dev.danielarrais.votingsystem.infra.database.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Builder
 @Setter
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
 @Table(name = "ASSEMBLEIAS")
 public class Assembleia {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -23,6 +25,6 @@ public class Assembleia {
     @Column(nullable = false)
     private LocalDateTime dataEncerramento;
 
-    @OneToMany
+    @OneToMany(mappedBy = "assembleia")
     private List<Pauta> pautas;
 }
