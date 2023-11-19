@@ -4,5 +4,5 @@ spring:
       ddl-auto: none
   datasource:
     url: jdbc:mysql://${DB_HOST:localhost}:3306/voting-system?createDatabaseIfNotExist=true&serverTimezone=UTC&useSSL=false
-    username: user
+    username: root
     password: pass
