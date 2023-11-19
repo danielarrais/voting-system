@@ -1,12 +1,13 @@
 services:
-  mongo:
-     image: mongodb/mongodb-community-server:6.0-ubi8
-     environment:
-       - MONGO_INITDB_ROOT_USERNAME=user
-       - MONGO_INITDB_ROOT_PASSWORD=pass
-       - MONGO_INITDB_DATABASE=voting-system
-     ports:
-       - 27017:27017
+  mysql:
+    image: mysql:8.0.18
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_ROOT_PASSWORD: "pass"
+      MYSQL_DATABASE: "voting-system"
+    ports:
+      - "3306:3306"
   rabbitmq:
     image: 'rabbitmq:latest'
     environment:
