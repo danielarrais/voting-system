@@ -6,3 +6,6 @@ spring:
     url: jdbc:mysql://${DB_HOST:localhost}:3306/voting-system?createDatabaseIfNotExist=true&serverTimezone=UTC&useSSL=false
     username: root
     password: pass
+invert-text:
+  base-url: https://api.invertexto.com/v1
+  token: ${INVERTEXT_TOKEN:'r6B7R6oQNChKMzTW7DExc9CItDYueAXM'}
