@@ -1,5 +1,6 @@
 package dev.danielarrais.votingsystem.application;
 
+import dev.danielarrais.votingsystem.api.dto.request.PautaRequest;
 import dev.danielarrais.votingsystem.application.exceptions.AssembleiaNaoEncontrada;
 import dev.danielarrais.votingsystem.infra.database.entities.PautaEntity;
 import dev.danielarrais.votingsystem.infra.database.repositories.AssembleiaRepository;
@@ -13,10 +14,10 @@ public class CriarPautaService {
     private final PautaRepository pautaRepository;
     private final AssembleiaRepository assembleiaRepository;
 
-    public void cria(Long assembleiaId, String titulo, String descricao) {
+    public void cria(PautaRequest pautaRequest) {
         PautaEntity pautaEntity = PautaEntity.builder()
-                .titulo(titulo)
-                .descricao(descricao)
+                .titulo(pautaRequest.getTitulo())
+                .descricao(pautaRequest.getDescricao())
                 .build();
 
         pautaRepository.save(pautaEntity);
