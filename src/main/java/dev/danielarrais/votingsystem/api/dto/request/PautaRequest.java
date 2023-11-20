@@ -6,9 +6,6 @@ import lombok.Data;
 
 @Data
 public class PautaRequest {
-
-    @NotNull
-    private Long assembleiaId;
     @NotBlank
     private String titulo;
     private String descricao;
