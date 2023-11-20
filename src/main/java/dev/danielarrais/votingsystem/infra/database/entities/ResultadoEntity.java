@@ -3,7 +3,7 @@ package dev.danielarrais.votingsystem.infra.database.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Builder
 @Setter
@@ -11,19 +11,21 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "PAUTAS")
-public class PautaEntity {
-
+@Table(name = "RESULTADOS")
+public class ResultadoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String titulo;
+    private Integer votosFavoraveis;
 
     @Column(nullable = false)
-    private String descricao;
+    private Integer votosContrarios;
 
-    @OneToOne(mappedBy = "pauta")
-    private ResultadoEntity resultado;
+    @Column(nullable = false)
+    private String resultado;
+
+    @OneToOne
+    private PautaEntity pauta;
 }
