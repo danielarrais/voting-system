@@ -1,13 +1,11 @@
 package dev.danielarrais.votingsystem.application;
 
-import dev.danielarrais.votingsystem.application.exceptions.PautaEmVotacao;
-import dev.danielarrais.votingsystem.application.exceptions.ResultadosNaoProcessados;
+import dev.danielarrais.votingsystem.application.exceptions.PautaEmVotacaoException;
+import dev.danielarrais.votingsystem.application.exceptions.ResultadosNaoProcessadosException;
 import dev.danielarrais.votingsystem.domain.Resultado;
 import dev.danielarrais.votingsystem.infra.database.entities.ResultadoEntity;
-import dev.danielarrais.votingsystem.infra.database.repositories.PautaRepository;
 import dev.danielarrais.votingsystem.infra.database.repositories.ResultadoRepository;
 import dev.danielarrais.votingsystem.infra.database.repositories.SessaoRepository;
-import dev.danielarrais.votingsystem.infra.database.repositories.VotoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +24,7 @@ public class RecuperarResultadoService {
 
     private Resultado buscaResultadosDaVotacao(Long pautaId) {
         ResultadoEntity resultado = resultadoRepository.findByPautaId(pautaId)
-                .orElseThrow(() -> new ResultadosNaoProcessados(pautaId));
+                .orElseThrow(() -> new ResultadosNaoProcessadosException(pautaId));
 
 
         return Resultado.builder()
@@ -40,7 +38,7 @@ public class RecuperarResultadoService {
         boolean pautaAberta = sessaoRepository.sessaoPautaEstarAberta(pautaId);
 
         if (!pautaAberta) {
-            throw new PautaEmVotacao(pautaId);
+            throw new PautaEmVotacaoException(pautaId);
         }
 
     }

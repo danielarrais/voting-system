@@ -2,7 +2,10 @@ package dev.danielarrais.votingsystem.api;
 
 import dev.danielarrais.votingsystem.api.dto.request.PautaRequest;
 import dev.danielarrais.votingsystem.api.dto.request.VotoRequest;
-import dev.danielarrais.votingsystem.application.*;
+import dev.danielarrais.votingsystem.application.CriarPautaService;
+import dev.danielarrais.votingsystem.application.CriarSessaoService;
+import dev.danielarrais.votingsystem.application.RecuperarResultadoService;
+import dev.danielarrais.votingsystem.application.RegistrarVotoService;
 import dev.danielarrais.votingsystem.domain.Resultado;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

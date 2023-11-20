@@ -1,7 +1,7 @@
 package dev.danielarrais.votingsystem.application.exceptions;
 
-public class PautaNaoEncontrada extends NegocioException {
-    public PautaNaoEncontrada(Long id) {
+public class PautaNaoEncontradaException extends NegocioException {
+    public PautaNaoEncontradaException(Long id) {
         super("Pauta de ID " + id + " não encontrada");
     }
 }

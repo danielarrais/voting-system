@@ -1,7 +1,7 @@
 package dev.danielarrais.votingsystem.application.exceptions;
 
-public class VotoJaRegistrado extends NegocioException {
-    public VotoJaRegistrado(String cpf) {
+public class VotoJaRegistradoException extends NegocioException {
+    public VotoJaRegistradoException(String cpf) {
         super("Voto já registrado no CPF " + cpf);
     }
 }

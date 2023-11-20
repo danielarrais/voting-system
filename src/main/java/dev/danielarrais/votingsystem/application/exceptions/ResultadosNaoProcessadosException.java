@@ -1,7 +1,7 @@
 package dev.danielarrais.votingsystem.application.exceptions;
 
-public class ResultadosNaoProcessados extends NegocioException {
-    public ResultadosNaoProcessados(Long id) {
+public class ResultadosNaoProcessadosException extends NegocioException {
+    public ResultadosNaoProcessadosException(Long id) {
         super("A pauta de ID " + id + " ainda teve os resultados processados");
     }
 }
