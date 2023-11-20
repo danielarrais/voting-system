@@ -25,8 +25,8 @@ public class RegistrarVotoService {
     public void votar(Long pautaId, VotoRequest votoRequest) {
         LocalDateTime horaDoVoto = LocalDateTime.now();
 
-        validaAutorizacaoDeVoto(votoRequest.getCpf());
         validaSePautaExiste(pautaId);
+        validaAutorizacaoDeVoto(votoRequest.getCpf());
         validaSeSessaoDaPautaEstarAberta(pautaId, horaDoVoto);
         validaSeJaVotou(pautaId, votoRequest.getCpf());
 
@@ -67,7 +67,7 @@ public class RegistrarVotoService {
     }
 
     private void validaSeSessaoDaPautaEstarAberta(Long pautaId, LocalDateTime horaDoVoto) {
-        boolean pautaAberta = sessaoRepository.sessaoEstavaAbertaNoHorario(horaDoVoto);
+        boolean pautaAberta = sessaoRepository.sessaoPautaEstarAberta(pautaId, horaDoVoto);
 
         if (!pautaAberta) {
             throw new PautaSemSessaoAberta(pautaId);
