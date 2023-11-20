@@ -12,6 +12,12 @@ import java.util.Optional;
 public interface SessaoRepository extends JpaRepository<SessaoEntity, Long> {
     Optional<SessaoEntity> findByPautaId(Long pautaId);
 
-    @Query("select exists(s.id) from SessaoEntity s where s.dataEncerramento <= :date")
-    Boolean sessaoEstavaAbertaNoHorario(LocalDateTime date);
+    // @Query("select exists(s.id) from SessaoEntity s where s.dataEncerramento <= :date and s.pauta.id = :pautaId")
+    @Query("select (count(s) > 0) from SessaoEntity s where :date <= s.dataEncerramento and s.pauta.id = :pautaId")
+    boolean sessaoPautaEstarAberta(Long pautaId, LocalDateTime date);
+
+    @Query("select (count(s) > 0) from SessaoEntity s where CURRENT_DATE <= s.dataEncerramento and s.pauta.id = :pautaId")
+    boolean sessaoPautaEstarAberta(Long pautaId);
+
+    boolean existsByPautaId(Long pautaId);
 }
