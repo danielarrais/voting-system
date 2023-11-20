@@ -1,14 +1,8 @@
 spring:
-  liquibase:
-    change-log: db/changelog/db.changelog-master.yml
-    default-schema: voting-system
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create-drop
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:3306/voting-system?createDatabaseIfNotExist=true&serverTimezone=UTC&useSSL=false
-    username: root
-    password: pass
-invert-text:
-  base-url: https://api.invertexto.com/v1
-  token: ${INVERTEXT_TOKEN}
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+    username: sa
+    password: sa

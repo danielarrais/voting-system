@@ -4,5 +4,5 @@ public enum ResultadoEnum {
     APROVADA,
     EMPATADA,
     REPROVADA,
-    SEM_VOTOS
+    ABSTENCAO
 }

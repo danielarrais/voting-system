@@ -17,7 +17,7 @@ public class RecuperarResultadoService {
     private final ResultadoRepository resultadoRepository;
 
     @Transactional
-    public Resultado resultado(Long pautaId) {
+    public Resultado buscarResultado(Long pautaId) {
         validaSeSessaoDaPautaEstarAberta(pautaId);
         return buscaResultadosDaVotacao(pautaId);
     }
@@ -37,7 +37,7 @@ public class RecuperarResultadoService {
     private void validaSeSessaoDaPautaEstarAberta(Long pautaId) {
         boolean pautaAberta = sessaoRepository.sessaoPautaEstarAberta(pautaId);
 
-        if (!pautaAberta) {
+        if (pautaAberta) {
             throw new PautaEmVotacaoException(pautaId);
         }
 
