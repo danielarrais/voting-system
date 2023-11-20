@@ -1,7 +1,7 @@
 package dev.danielarrais.votingsystem.application;
 
 import dev.danielarrais.votingsystem.application.dto.ResultadoEnum;
-import dev.danielarrais.votingsystem.application.exceptions.PautaEmVotacao;
+import dev.danielarrais.votingsystem.application.exceptions.PautaEmVotacaoException;
 import dev.danielarrais.votingsystem.infra.database.entities.PautaEntity;
 import dev.danielarrais.votingsystem.infra.database.entities.ResultadoEntity;
 import dev.danielarrais.votingsystem.infra.database.entities.VotoEntity;
@@ -10,12 +10,9 @@ import dev.danielarrais.votingsystem.infra.database.repositories.ResultadoReposi
 import dev.danielarrais.votingsystem.infra.database.repositories.SessaoRepository;
 import dev.danielarrais.votingsystem.infra.database.repositories.VotoRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -92,7 +89,7 @@ public class ProcessarResultadoVotosService {
         boolean pautaAberta = sessaoRepository.sessaoPautaEstarAberta(pautaId);
 
         if (!pautaAberta) {
-            throw new PautaEmVotacao(pautaId);
+            throw new PautaEmVotacaoException(pautaId);
         }
 
     }

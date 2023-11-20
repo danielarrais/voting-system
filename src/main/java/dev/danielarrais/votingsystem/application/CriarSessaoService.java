@@ -1,8 +1,7 @@
 package dev.danielarrais.votingsystem.application;
 
-import dev.danielarrais.votingsystem.application.exceptions.PautaComSessaoJaRegistrada;
-import dev.danielarrais.votingsystem.application.exceptions.PautaNaoEncontrada;
-import dev.danielarrais.votingsystem.application.exceptions.PautaSemSessaoAberta;
+import dev.danielarrais.votingsystem.application.exceptions.PautaComSessaoJaRegistradaException;
+import dev.danielarrais.votingsystem.application.exceptions.PautaNaoEncontradaException;
 import dev.danielarrais.votingsystem.infra.database.entities.PautaEntity;
 import dev.danielarrais.votingsystem.infra.database.entities.SessaoEntity;
 import dev.danielarrais.votingsystem.infra.database.repositories.PautaRepository;
@@ -41,7 +40,7 @@ public class CriarSessaoService {
         boolean pautaExiste = pautaRepository.existsById(pautaId);
 
         if (!pautaExiste) {
-            throw new PautaNaoEncontrada(pautaId);
+            throw new PautaNaoEncontradaException(pautaId);
         }
     }
 
@@ -49,13 +48,13 @@ public class CriarSessaoService {
         boolean jaExisteSessao = sessaoRepository.existsByPautaId(pautaId);
 
         if (jaExisteSessao) {
-            throw new PautaComSessaoJaRegistrada(pautaId);
+            throw new PautaComSessaoJaRegistradaException(pautaId);
         }
 
     }
 
     private PautaEntity buscarPauta(Long pautaId) {
-        return pautaRepository.findById(pautaId).orElseThrow(() -> new PautaNaoEncontrada(pautaId));
+        return pautaRepository.findById(pautaId).orElseThrow(() -> new PautaNaoEncontradaException(pautaId));
     }
 
     private LocalDateTime gerarDataEncerramento(Integer duracao, LocalDateTime dataInicio) {

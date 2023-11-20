@@ -1,7 +1,10 @@
 package dev.danielarrais.votingsystem.application;
 
 import dev.danielarrais.votingsystem.api.dto.request.VotoRequest;
-import dev.danielarrais.votingsystem.application.exceptions.*;
+import dev.danielarrais.votingsystem.application.exceptions.CPFNaoAutorizadoAVotarException;
+import dev.danielarrais.votingsystem.application.exceptions.PautaNaoEncontradaException;
+import dev.danielarrais.votingsystem.application.exceptions.PautaSemSessaoAbertaException;
+import dev.danielarrais.votingsystem.application.exceptions.VotoJaRegistradoException;
 import dev.danielarrais.votingsystem.infra.database.entities.PautaEntity;
 import dev.danielarrais.votingsystem.infra.database.entities.VotoEntity;
 import dev.danielarrais.votingsystem.infra.database.repositories.PautaRepository;
@@ -46,7 +49,7 @@ public class RegistrarVotoService {
         boolean jaVotou = votoRepository.existsByPautaIdAndCpf(pautaId, cpf);
 
         if (jaVotou) {
-            throw new VotoJaRegistrado(cpf);
+            throw new VotoJaRegistradoException(cpf);
         }
     }
 
@@ -54,7 +57,7 @@ public class RegistrarVotoService {
         boolean pautaExiste = pautaRepository.existsById(pautaId);
 
         if (!pautaExiste) {
-            throw new PautaNaoEncontrada(pautaId);
+            throw new PautaNaoEncontradaException(pautaId);
         }
     }
 
@@ -62,7 +65,7 @@ public class RegistrarVotoService {
         boolean podeVotar = cpfAutorizadoAVotar(CPF);
 
         if (!podeVotar) {
-            throw new CPFNaoAutorizadoAVotar(CPF);
+            throw new CPFNaoAutorizadoAVotarException(CPF);
         }
     }
 
@@ -70,7 +73,7 @@ public class RegistrarVotoService {
         boolean pautaAberta = sessaoRepository.sessaoPautaEstarAberta(pautaId, horaDoVoto);
 
         if (!pautaAberta) {
-            throw new PautaSemSessaoAberta(pautaId);
+            throw new PautaSemSessaoAbertaException(pautaId);
         }
 
     }

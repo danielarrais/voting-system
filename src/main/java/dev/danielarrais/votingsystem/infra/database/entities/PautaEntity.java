@@ -3,8 +3,6 @@ package dev.danielarrais.votingsystem.infra.database.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @Builder
 @Setter
 @Getter
