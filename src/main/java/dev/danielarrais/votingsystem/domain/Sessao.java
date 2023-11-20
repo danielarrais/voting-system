@@ -8,7 +8,6 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Builder
 @Getter
 public class Sessao {
     private Long id;
@@ -20,7 +19,15 @@ public class Sessao {
     private LocalDateTime dataEncerramento;
     private List<Voto> votos;
 
-    public boolean estaAtiva() {
-        return LocalDateTime.now().isAfter(this.dataEncerramento);
+    @Builder
+    public Sessao(Long id, LocalDateTime dataInicio, Integer duracao, List<Voto> votos) {
+        this.id = id;
+        this.dataInicio = dataInicio;
+        this.dataEncerramento = this.gerarDataEncerramento(duracao);
+        this.votos = votos;
+    }
+
+    private LocalDateTime gerarDataEncerramento(Integer duracao) {
+        return this.dataInicio.plusMinutes(duracao);
     }
 }

@@ -7,9 +7,13 @@ import dev.danielarrais.votingsystem.application.CriarSessaoService;
 import dev.danielarrais.votingsystem.application.RecuperarResultadoService;
 import dev.danielarrais.votingsystem.application.RegistrarVotoService;
 import dev.danielarrais.votingsystem.domain.Resultado;
+import dev.danielarrais.votingsystem.domain.Sessao;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -23,17 +27,29 @@ public class PautaController {
     private final RegistrarVotoService registrarVotoService;
     private final RecuperarResultadoService resultadoService;
 
+    @Value("${voting.default-session-duration}")
+    private Integer sessionDuration;
+
     @PostMapping
     @ResponseStatus(CREATED)
     public void criarPauta(@Valid @RequestBody PautaRequest pautaRequest) {
         criarPautaService.cria(pautaRequest);
     }
 
-    @PostMapping("/{pauta_id}/sessoes")
+    @PostMapping("/{pautaId}/sessoes")
     @ResponseStatus(CREATED)
-    public void criarSessao(@PathVariable(name = "pauta_id") Long pautaId,
+    public void criarSessao(@PathVariable Long pautaId,
                             @RequestParam(required = false) Integer duracao) {
-        criarSessaoService.cria(pautaId, duracao);
+        if (duracao == null || duracao == 0) {
+            duracao = sessionDuration;
+        }
+
+        Sessao sessao = Sessao.builder()
+                .dataInicio(LocalDateTime.now())
+                .duracao(duracao)
+                .build();
+
+        criarSessaoService.criar(pautaId, sessao);
     }
 
     @PostMapping("/{pauta_id}/votos")
@@ -46,7 +62,7 @@ public class PautaController {
     @GetMapping("/{pauta_id}/resultados")
     @ResponseStatus(OK)
     public Resultado resultados(@PathVariable(name = "pauta_id") Long pautaId) {
-        return resultadoService.resultado(pautaId);
+        return resultadoService.buscarResultado(pautaId);
     }
 
 }

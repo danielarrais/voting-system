@@ -2,6 +2,7 @@ package dev.danielarrais.votingsystem.application;
 
 import dev.danielarrais.votingsystem.application.exceptions.PautaComSessaoJaRegistradaException;
 import dev.danielarrais.votingsystem.application.exceptions.PautaNaoEncontradaException;
+import dev.danielarrais.votingsystem.domain.Sessao;
 import dev.danielarrais.votingsystem.infra.database.entities.PautaEntity;
 import dev.danielarrais.votingsystem.infra.database.entities.SessaoEntity;
 import dev.danielarrais.votingsystem.infra.database.repositories.PautaRepository;
@@ -17,31 +18,18 @@ public class CriarSessaoService {
     private final PautaRepository pautaRepository;
     private final SessaoRepository sessaoRepository;
 
-    public void cria(Long pautaId, Integer duracao) {
-        validaSePautaExiste(pautaId);
+    public void criar(Long pautaId, Sessao sessao) {
+        PautaEntity pautaEntity = buscarPauta(pautaId);
+
         validaUnicidadeDaSessao(pautaId);
 
-        PautaEntity pautaEntity = buscarPauta(pautaId);
-        LocalDateTime dataInicio = LocalDateTime.now();
-
-        // TODO: CRIAR DURACAO DEFAULT DE 1 MINUTO
-        LocalDateTime dataEncerramento = gerarDataEncerramento(duracao, dataInicio);
-
         SessaoEntity sessaoEntity = SessaoEntity.builder()
-                .dataInicio(dataInicio)
-                .dataEncerramento(dataEncerramento)
+                .dataInicio(sessao.getDataInicio())
+                .dataEncerramento(sessao.getDataEncerramento())
                 .pauta(pautaEntity)
                 .build();
 
         sessaoRepository.save(sessaoEntity);
-    }
-
-    private void validaSePautaExiste(Long pautaId) {
-        boolean pautaExiste = pautaRepository.existsById(pautaId);
-
-        if (!pautaExiste) {
-            throw new PautaNaoEncontradaException(pautaId);
-        }
     }
 
     private void validaUnicidadeDaSessao(Long pautaId) {
@@ -55,9 +43,5 @@ public class CriarSessaoService {
 
     private PautaEntity buscarPauta(Long pautaId) {
         return pautaRepository.findById(pautaId).orElseThrow(() -> new PautaNaoEncontradaException(pautaId));
-    }
-
-    private LocalDateTime gerarDataEncerramento(Integer duracao, LocalDateTime dataInicio) {
-        return dataInicio.plusMinutes(duracao);
     }
 }
