@@ -97,3 +97,4 @@ e estrutura:
 * Salvar os resultados em um banco de dado com mais disponibilidades, tipo o mongodb, para disponibilizar os resultados
   de forma mais performática;
 * Utilizar mais recursos do swagger para detalhar melhor o body e outras informações dos endpoints;
+* Finalizar os testes de integração utilizando o testcontainers
