@@ -49,7 +49,11 @@ public class ProcessarResultadoVotosUseCaseImpl implements ProcessarResultadoVot
 
     private void publicarResultado(Long pautaId) {
         var resultado = processarResultado(pautaId);
-        publicar(resultado);
+        try {
+            publicar(resultado);
+        } catch (Exception e) {
+            log.error("Falha a publicar resultado", e);
+        }
     }
 
     public Resultado processarVotos(List<Voto> votos, Long pautaId) {
