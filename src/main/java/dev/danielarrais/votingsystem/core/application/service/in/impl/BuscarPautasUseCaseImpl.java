@@ -1,6 +1,6 @@
 package dev.danielarrais.votingsystem.core.application.service.in.impl;
 
-import dev.danielarrais.votingsystem.core.application.service.in.RecuperarPautasUseCase;
+import dev.danielarrais.votingsystem.core.application.service.in.BuscarPautasUseCase;
 import dev.danielarrais.votingsystem.core.application.service.out.RecuperarPautaService;
 import dev.danielarrais.votingsystem.core.domain.Pauta;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class RecuperarPautasUseCaseImpl implements RecuperarPautasUseCase {
+public class BuscarPautasUseCaseImpl implements BuscarPautasUseCase {
     private final RecuperarPautaService recuperarPautaService;
 
     @Override

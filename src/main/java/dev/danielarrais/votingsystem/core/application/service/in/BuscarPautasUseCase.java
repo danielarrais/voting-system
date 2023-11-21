@@ -4,6 +4,6 @@ import dev.danielarrais.votingsystem.core.domain.Pauta;
 
 import java.util.List;
 
-public interface RecuperarPautasUseCase {
+public interface BuscarPautasUseCase {
     List<Pauta> buscarTodasPautas();
 }

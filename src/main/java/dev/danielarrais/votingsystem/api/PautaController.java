@@ -5,8 +5,8 @@ import dev.danielarrais.votingsystem.api.dto.request.VotoRequest;
 import dev.danielarrais.votingsystem.api.mapper.SessaoMapper;
 import dev.danielarrais.votingsystem.core.application.service.in.CriarPautaUserCase;
 import dev.danielarrais.votingsystem.core.application.service.in.CriarSessaoUserCase;
-import dev.danielarrais.votingsystem.core.application.RecuperarResultadoService;
-import dev.danielarrais.votingsystem.core.application.service.in.RecuperarPautasUseCase;
+import dev.danielarrais.votingsystem.core.application.service.in.BuscarPautasUseCase;
+import dev.danielarrais.votingsystem.core.application.service.in.impl.BuscarResultadoUseCaseImpl;
 import dev.danielarrais.votingsystem.core.application.service.in.impl.RegistrarVotoUserCaseImpl;
 import dev.danielarrais.votingsystem.core.domain.Pauta;
 import dev.danielarrais.votingsystem.core.domain.Resultado;
@@ -28,8 +28,8 @@ public class PautaController {
     private final CriarPautaUserCase criarPautaUserCase;
     private final CriarSessaoUserCase criarSessaoUserCase;
     private final RegistrarVotoUserCaseImpl registrarVotoUserCaseImpl;
-    private final RecuperarResultadoService resultadoService;
-    private final RecuperarPautasUseCase recuperarPautasUseCase;
+    private final BuscarResultadoUseCaseImpl resultadoService;
+    private final BuscarPautasUseCase buscarPautasUseCase;
 
 
     @PostMapping
@@ -41,7 +41,7 @@ public class PautaController {
     @GetMapping
     @ResponseStatus(OK)
     public List<Pauta> buscarPautas() {
-        return recuperarPautasUseCase.buscarTodasPautas();
+        return buscarPautasUseCase.buscarTodasPautas();
     }
 
     @PostMapping("/{pautaId}/sessoes")
