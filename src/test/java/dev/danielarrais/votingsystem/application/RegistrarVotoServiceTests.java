@@ -1,17 +1,12 @@
 package dev.danielarrais.votingsystem.application;
 
-import dev.danielarrais.votingsystem.application.exceptions.CPFNaoAutorizadoAVotarException;
-import dev.danielarrais.votingsystem.application.exceptions.PautaNaoEncontradaException;
-import dev.danielarrais.votingsystem.application.exceptions.PautaSemSessaoAbertaException;
-import dev.danielarrais.votingsystem.application.exceptions.VotoJaRegistradoException;
-import dev.danielarrais.votingsystem.domain.Voto;
-import dev.danielarrais.votingsystem.infra.database.entities.PautaEntity;
-import dev.danielarrais.votingsystem.infra.database.repositories.PautaRepository;
-import dev.danielarrais.votingsystem.infra.database.repositories.SessaoRepository;
-import dev.danielarrais.votingsystem.infra.database.repositories.VotoRepository;
-import dev.danielarrais.votingsystem.infra.feign.CPFValido;
-import dev.danielarrais.votingsystem.infra.feign.InvertextClient;
-import org.junit.jupiter.api.Assertions;
+import dev.danielarrais.votingsystem.core.application.exceptions.CpfNaoAutorizadoAVotarException;
+import dev.danielarrais.votingsystem.core.application.exceptions.PautaNaoEncontradaException;
+import dev.danielarrais.votingsystem.core.application.exceptions.PautaSemSessaoAbertaException;
+import dev.danielarrais.votingsystem.core.application.exceptions.VotoJaRegistradoException;
+import dev.danielarrais.votingsystem.core.application.service.in.impl.RegistrarVotoUserCaseImpl;
+import dev.danielarrais.votingsystem.core.application.service.out.*;
+import dev.danielarrais.votingsystem.core.domain.Voto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,9 +16,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,78 +30,78 @@ public class RegistrarVotoServiceTests {
     private final String CPF_INVALIDO = "345345345345";
 
     @Mock
-    private PautaRepository pautaRepository;
+    private RecuperarPautaService recuperarPautaService;
 
     @Mock
-    private InvertextClient invertextClient;
+    private ValidaCpfService validaCpfService;
 
     @Mock
-    private SessaoRepository sessaoRepository;
+    private RecuperarSessaoService recuperarSessaoService;
 
     @Mock
-    private VotoRepository votoRepository;
+    private RecuperarVotosService recuperarVotosService;
+
+    @Mock
+    private SalvarVotoService salvarVotoService;
 
     @InjectMocks
-    private RegistrarVotoService registrarVotoService;
+    private RegistrarVotoUserCaseImpl registrarVotoService;
 
     @Test
-    public void votar_darErroQuandoASessaEstarAberta() {
+    public void votar_darErroQuandoAPautaNaoExiste() {
         var voto = gerarVotoValido();
-        var expected = new PautaNaoEncontradaException(1L);
+        var expected = new PautaNaoEncontradaException(voto.getPautaId());
 
-        when(pautaRepository.existsById(1L)).thenReturn(Boolean.FALSE);
+        when(recuperarPautaService.existe(voto.getPautaId())).thenReturn(Boolean.FALSE);
 
-        assertThatThrownBy(() -> registrarVotoService.votar(1L, voto))
+        assertThatThrownBy(() -> registrarVotoService.votar(voto))
                 .isInstanceOf(PautaNaoEncontradaException.class)
                 .hasMessage(expected.getMessage());
 
-        verify(pautaRepository, times(1)).existsById(any());
-        verify(invertextClient, times(0)).cpfValido(any());
-        verify(sessaoRepository, times(0)).sessaoPautaEstarAberta(any());
-        verify(votoRepository, times(0)).existsByPautaIdAndCpf(any(), any());
-        verify(pautaRepository, times(0)).findById(any());
-        verify(votoRepository, times(0)).save(any());
+        verify(recuperarPautaService, times(1)).existe(any());
+        verify(validaCpfService, times(0)).cpfValido(any());
+        verify(recuperarSessaoService, times(0)).existePautaAberta(any(), any());
+        verify(recuperarVotosService, times(0)).existsByPautaIdAndCpf(any(), any());
+        verify(salvarVotoService, times(0)).salvar(any());
     }
 
     @Test
     public void votar_darErroQuandoOCpfEInvalido() {
         var voto = gerarVotoCPFInvalido();
-        var expected = new CPFNaoAutorizadoAVotarException(voto.getCpf());
+        var expected = new CpfNaoAutorizadoAVotarException(voto.getCpf());
 
-        when(pautaRepository.existsById(any())).thenReturn(Boolean.TRUE);
-        when(invertextClient.cpfValido(any())).thenReturn(getValidacaoCPF(false));
+        when(recuperarPautaService.existe(any())).thenReturn(Boolean.TRUE);
+        when(validaCpfService.cpfValido(any())).thenReturn(Boolean.FALSE);
 
-        assertThatThrownBy(() -> registrarVotoService.votar(1L, voto))
-                .isInstanceOf(CPFNaoAutorizadoAVotarException.class)
+        assertThatThrownBy(() -> registrarVotoService.votar(voto))
+                .isInstanceOf(CpfNaoAutorizadoAVotarException.class)
                 .hasMessage(expected.getMessage());
 
-        verify(pautaRepository, times(1)).existsById(any());
-        verify(invertextClient, times(1)).cpfValido(any());
-        verify(sessaoRepository, times(0)).sessaoPautaEstarAberta(any(), any());
-        verify(votoRepository, times(0)).existsByPautaIdAndCpf(any(), any());
-        verify(pautaRepository, times(0)).findById(any());
-        verify(votoRepository, times(0)).save(any());
+        verify(recuperarPautaService, times(1)).existe(any());
+        verify(validaCpfService, times(1)).cpfValido(any());
+        verify(recuperarSessaoService, times(0)).existePautaAberta(any(), any());
+        verify(recuperarVotosService, times(0)).existsByPautaIdAndCpf(any(), any());
+        verify(salvarVotoService, times(0)).salvar(any());
     }
 
     @Test
     public void votar_darErroQuandoASessaoNaoEstaAberta() {
         var voto = gerarVotoCPFInvalido();
-        var expected = new PautaSemSessaoAbertaException(1L);
+        var expected = new PautaSemSessaoAbertaException(voto.getPautaId());
 
-        when(pautaRepository.existsById(any())).thenReturn(Boolean.TRUE);
-        when(invertextClient.cpfValido(any())).thenReturn(getValidacaoCPF(Boolean.TRUE));
-        when(sessaoRepository.sessaoPautaEstarAberta(any(), any())).thenReturn(Boolean.FALSE);
+        when(recuperarPautaService.existe(any())).thenReturn(Boolean.TRUE);
+        when(validaCpfService.cpfValido(any())).thenReturn(Boolean.TRUE);
+        when(recuperarSessaoService.existePautaAberta(any(), any())).thenReturn(Boolean.FALSE);
 
-        assertThatThrownBy(() -> registrarVotoService.votar(1L, voto))
+        assertThatThrownBy(() -> registrarVotoService.votar(voto))
                 .isInstanceOf(PautaSemSessaoAbertaException.class)
                 .hasMessage(expected.getMessage());
 
-        verify(pautaRepository, times(1)).existsById(any());
-        verify(invertextClient, times(1)).cpfValido(any());
-        verify(sessaoRepository, times(1)).sessaoPautaEstarAberta(any(), any());
-        verify(votoRepository, times(0)).existsByPautaIdAndCpf(any(), any());
-        verify(pautaRepository, times(0)).findById(any());
-        verify(votoRepository, times(0)).save(any());
+        verify(recuperarPautaService, times(1)).existe(any());
+        verify(validaCpfService, times(1)).cpfValido(any());
+        verify(recuperarSessaoService, times(1)).existePautaAberta(any(), any());
+        verify(recuperarVotosService, times(0)).existsByPautaIdAndCpf(any(), any());
+        verify(salvarVotoService, times(0)).salvar(any());
     }
 
     @Test
@@ -116,47 +109,47 @@ public class RegistrarVotoServiceTests {
         var voto = gerarVotoCPFInvalido();
         var expected = new VotoJaRegistradoException(voto.getCpf());
 
-        when(pautaRepository.existsById(any())).thenReturn(Boolean.TRUE);
-        when(invertextClient.cpfValido(any())).thenReturn(getValidacaoCPF(Boolean.TRUE));
-        when(sessaoRepository.sessaoPautaEstarAberta(any(), any())).thenReturn(Boolean.TRUE);
-        when(votoRepository.existsByPautaIdAndCpf(any(), any())).thenReturn(Boolean.TRUE);
+        when(recuperarPautaService.existe(any())).thenReturn(Boolean.TRUE);
+        when(validaCpfService.cpfValido(any())).thenReturn(Boolean.TRUE);
+        when(recuperarSessaoService.existePautaAberta(any(), any())).thenReturn(Boolean.TRUE);
+        when(recuperarVotosService.existsByPautaIdAndCpf(any(), any())).thenReturn(Boolean.TRUE);
 
-        assertThatThrownBy(() -> registrarVotoService.votar(1L, voto))
+        assertThatThrownBy(() -> registrarVotoService.votar(voto))
                 .isInstanceOf(VotoJaRegistradoException.class)
                 .hasMessage(expected.getMessage());
 
-        verify(pautaRepository, times(1)).existsById(any());
-        verify(invertextClient, times(1)).cpfValido(any());
-        verify(sessaoRepository, times(1)).sessaoPautaEstarAberta(any(), any());
-        verify(votoRepository, times(1)).existsByPautaIdAndCpf(any(), any());
-        verify(pautaRepository, times(0)).findById(any());
-        verify(votoRepository, times(0)).save(any());
+        verify(recuperarPautaService, times(1)).existe(any());
+        verify(validaCpfService, times(1)).cpfValido(any());
+        verify(recuperarSessaoService, times(1)).existePautaAberta(any(), any());
+        verify(recuperarVotosService, times(1)).existsByPautaIdAndCpf(any(), any());
+        verify(recuperarPautaService, times(1)).existe(any());
+        verify(salvarVotoService, times(0)).salvar(any());
     }
 
     @Test
     public void votar_naoDarErro() {
         var voto = gerarVotoCPFInvalido();
 
-        when(pautaRepository.existsById(any())).thenReturn(Boolean.TRUE);
-        when(invertextClient.cpfValido(any())).thenReturn(getValidacaoCPF(Boolean.TRUE));
-        when(sessaoRepository.sessaoPautaEstarAberta(any(), any())).thenReturn(Boolean.TRUE);
-        when(votoRepository.existsByPautaIdAndCpf(any(), any())).thenReturn(Boolean.FALSE);
-        when(pautaRepository.findById(any())).thenReturn(Optional.of(new PautaEntity()));
+        when(recuperarPautaService.existe(any())).thenReturn(Boolean.TRUE);
+        when(validaCpfService.cpfValido(any())).thenReturn(Boolean.TRUE);
+        when(recuperarSessaoService.existePautaAberta(any(), any())).thenReturn(Boolean.TRUE);
+        when(recuperarVotosService.existsByPautaIdAndCpf(any(), any())).thenReturn(Boolean.FALSE);
 
-        assertDoesNotThrow(() -> registrarVotoService.votar(1L, voto));
+        assertDoesNotThrow(() -> registrarVotoService.votar(voto));
 
-        verify(pautaRepository, times(1)).existsById(any());
-        verify(invertextClient, times(1)).cpfValido(any());
-        verify(sessaoRepository, times(1)).sessaoPautaEstarAberta(any(), any());
-        verify(votoRepository, times(1)).existsByPautaIdAndCpf(any(), any());
-        verify(pautaRepository, times(1)).findById(any());
-        verify(votoRepository, times(1)).save(any());
+        verify(recuperarPautaService, times(1)).existe(any());
+        verify(validaCpfService, times(1)).cpfValido(any());
+        verify(recuperarSessaoService, times(1)).existePautaAberta(any(), any());
+        verify(recuperarVotosService, times(1)).existsByPautaIdAndCpf(any(), any());
+        verify(recuperarPautaService, times(1)).existe(any());
+        verify(salvarVotoService, times(1)).salvar(any());
     }
 
     public Voto gerarVotoValido() {
         return Voto.builder()
                 .cpf(CPF_VALIDO)
                 .hora(LocalDateTime.now())
+                .pautaId(1L)
                 .voto(true)
                 .build();
     }
@@ -166,11 +159,7 @@ public class RegistrarVotoServiceTests {
                 .cpf(CPF_INVALIDO)
                 .hora(LocalDateTime.now())
                 .voto(true)
+                .pautaId(1L)
                 .build();
     }
-
-    public CPFValido getValidacaoCPF(boolean valido) {
-        return new CPFValido(valido);
-    }
-
 }

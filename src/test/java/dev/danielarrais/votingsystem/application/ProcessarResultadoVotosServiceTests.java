@@ -1,10 +1,11 @@
 package dev.danielarrais.votingsystem.application;
 
-import dev.danielarrais.votingsystem.application.dto.ResultadoEnum;
-import dev.danielarrais.votingsystem.application.exceptions.PautaEmVotacaoException;
+import dev.danielarrais.votingsystem.core.application.dto.ResultadoEnum;
+import dev.danielarrais.votingsystem.core.application.exceptions.PautaEmVotacaoException;
+import dev.danielarrais.votingsystem.core.application.service.in.impl.ProcessarResultadoVotosUseCaseImpl;
+import dev.danielarrais.votingsystem.core.domain.Voto;
 import dev.danielarrais.votingsystem.infra.database.entities.PautaEntity;
 import dev.danielarrais.votingsystem.infra.database.entities.ResultadoEntity;
-import dev.danielarrais.votingsystem.infra.database.entities.VotoEntity;
 import dev.danielarrais.votingsystem.infra.database.repositories.PautaRepository;
 import dev.danielarrais.votingsystem.infra.database.repositories.ResultadoRepository;
 import dev.danielarrais.votingsystem.infra.database.repositories.SessaoRepository;
@@ -45,14 +46,14 @@ public class ProcessarResultadoVotosServiceTests {
     private ResultadoRepository resultadoRepository;
 
     @InjectMocks
-    private ProcessarResultadoVotosServiceImpl processarResultadoVotosService;
+    private ProcessarResultadoVotosUseCaseImpl processarResultadoVotosService;
 
     @Test
     public void resultado_falhaComPautaAindaEmVotacao() {
-        Mockito.when(sessaoRepository.sessaoPautaEstarAberta(1L)).thenReturn(Boolean.TRUE);
+        Mockito.when(sessaoRepository.sessaoDaPautaEstarAberta(1L)).thenReturn(Boolean.TRUE);
 
         var exception = assertThrows(PautaEmVotacaoException.class, () -> {
-            processarResultadoVotosService.resultado(1L);
+            processarResultadoVotosService.processarResultado(1L);
         });
 
         var expected = new PautaEmVotacaoException(1L);
@@ -61,7 +62,7 @@ public class ProcessarResultadoVotosServiceTests {
                 .extracting(Throwable::getMessage)
                 .isEqualTo(expected.getMessage());
 
-        verify(sessaoRepository, times(1)).sessaoPautaEstarAberta(any());
+        verify(sessaoRepository, times(1)).sessaoDaPautaEstarAberta(any());
         verify(votoRepository, never()).findByPautaId(any());
         verify(pautaRepository, never()).findLockById(any());
         verify(resultadoRepository, never()).save(any());
@@ -69,13 +70,13 @@ public class ProcessarResultadoVotosServiceTests {
 
     @Test
     public void resultado_naoFalhaQuandoASessaoEstarFechada() {
-        Mockito.when(sessaoRepository.sessaoPautaEstarAberta(1L)).thenReturn(Boolean.FALSE);
+        Mockito.when(sessaoRepository.sessaoDaPautaEstarAberta(1L)).thenReturn(Boolean.FALSE);
 
         assertDoesNotThrow(() -> {
-            processarResultadoVotosService.resultado(1L);
+            processarResultadoVotosService.processarResultado(1L);
         });
 
-        verify(sessaoRepository, times(1)).sessaoPautaEstarAberta(any());
+        verify(sessaoRepository, times(1)).sessaoDaPautaEstarAberta(any());
         verify(votoRepository, times(1)).findByPautaId(any());
         verify(pautaRepository, times(1)).findLockById(any());
         verify(resultadoRepository, times(1)).save(any());
@@ -85,7 +86,7 @@ public class ProcessarResultadoVotosServiceTests {
     public void processarVotos_retornaResultadoDeAprovacaoCorretamente() {
         var votos = geraVotosComMaisFavoraveis();
         var pauta = gerarPauta();
-        var resultado = processarResultadoVotosService.processarVotos(votos, pauta);
+        var resultado = processarResultadoVotosService.processarVotos(votos, pauta.getId());
         var esperado = ResultadoEntity.builder()
                 .votosFavoraveis(2)
                 .votosContrarios(1)
@@ -103,7 +104,7 @@ public class ProcessarResultadoVotosServiceTests {
     public void processarVotos_retornaResultadoDeEmpateCorretamente() {
         var votos = geraVotosEmpatados();
         var pauta = gerarPauta();
-        var resultado = processarResultadoVotosService.processarVotos(votos, pauta);
+        var resultado = processarResultadoVotosService.processarVotos(votos, pauta.getId());
         var esperado = ResultadoEntity.builder()
                 .votosFavoraveis(1)
                 .votosContrarios(1)
@@ -121,7 +122,7 @@ public class ProcessarResultadoVotosServiceTests {
     public void processarVotos_retornaResultadoAbstencaoCorretamente() {
         var votos = geraVotosAbstencao();
         var pauta = gerarPauta();
-        var resultado = processarResultadoVotosService.processarVotos(votos, pauta);
+        var resultado = processarResultadoVotosService.processarVotos(votos, pauta.getId());
         var esperado = ResultadoEntity.builder()
                 .votosFavoraveis(0)
                 .votosContrarios(0)
@@ -139,7 +140,7 @@ public class ProcessarResultadoVotosServiceTests {
     public void processarVotos_retornaResultadoReprovacaoCorretamente() {
         var votos = geraVotosReprovacao();
         var pauta = gerarPauta();
-        var resultado = processarResultadoVotosService.processarVotos(votos, pauta);
+        var resultado = processarResultadoVotosService.processarVotos(votos, pauta.getId());
         var esperado = ResultadoEntity.builder()
                 .votosFavoraveis(1)
                 .votosContrarios(2)
@@ -161,54 +162,54 @@ public class ProcessarResultadoVotosServiceTests {
                 .build();
     }
 
-    public List<VotoEntity> geraVotosComMaisFavoraveis() {
+    public List<Voto> geraVotosComMaisFavoraveis() {
         return Arrays.asList(
-                VotoEntity.builder()
+                Voto.builder()
                         .cpf("TESTE")
                         .voto(true)
                         .build(),
-                VotoEntity.builder()
+                Voto.builder()
                         .cpf("TESTE2")
                         .voto(true)
                         .build(),
-                VotoEntity.builder()
+                Voto.builder()
                         .cpf("TESTE3")
                         .voto(false)
                         .build()
         );
     }
 
-    public List<VotoEntity> geraVotosReprovacao() {
+    public List<Voto> geraVotosReprovacao() {
         return Arrays.asList(
-                VotoEntity.builder()
+                Voto.builder()
                         .cpf("TESTE")
                         .voto(true)
                         .build(),
-                VotoEntity.builder()
+                Voto.builder()
                         .cpf("TESTE2")
                         .voto(false)
                         .build(),
-                VotoEntity.builder()
+                Voto.builder()
                         .cpf("TESTE3")
                         .voto(false)
                         .build()
         );
     }
 
-    public List<VotoEntity> geraVotosEmpatados() {
+    public List<Voto> geraVotosEmpatados() {
         return Arrays.asList(
-                VotoEntity.builder()
+                Voto.builder()
                         .cpf("TESTE")
                         .voto(true)
                         .build(),
-                VotoEntity.builder()
+                Voto.builder()
                         .cpf("TESTE3")
                         .voto(false)
                         .build()
         );
     }
 
-    public List<VotoEntity> geraVotosAbstencao() {
+    public List<Voto> geraVotosAbstencao() {
         return Collections.emptyList();
     }
 }

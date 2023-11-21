@@ -1,7 +1,7 @@
 package dev.danielarrais.votingsystem.api.handler;
 
 import dev.danielarrais.votingsystem.api.dto.response.ErrorResponse;
-import dev.danielarrais.votingsystem.application.exceptions.NegocioException;
+import dev.danielarrais.votingsystem.core.application.exceptions.NegocioException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;

@@ -2,18 +2,21 @@ package dev.danielarrais.votingsystem.api;
 
 import dev.danielarrais.votingsystem.api.dto.request.PautaRequest;
 import dev.danielarrais.votingsystem.api.dto.request.VotoRequest;
-import dev.danielarrais.votingsystem.application.CriarPautaService;
-import dev.danielarrais.votingsystem.application.CriarSessaoService;
-import dev.danielarrais.votingsystem.application.RecuperarResultadoService;
-import dev.danielarrais.votingsystem.application.RegistrarVotoService;
-import dev.danielarrais.votingsystem.domain.Resultado;
-import dev.danielarrais.votingsystem.domain.Sessao;
+import dev.danielarrais.votingsystem.api.mapper.SessaoMapper;
+import dev.danielarrais.votingsystem.core.application.service.in.CriarPautaUserCase;
+import dev.danielarrais.votingsystem.core.application.service.in.CriarSessaoUserCase;
+import dev.danielarrais.votingsystem.core.application.RecuperarResultadoService;
+import dev.danielarrais.votingsystem.core.application.service.in.RecuperarPautasUseCase;
+import dev.danielarrais.votingsystem.core.application.service.in.impl.RegistrarVotoUserCaseImpl;
+import dev.danielarrais.votingsystem.core.domain.Pauta;
+import dev.danielarrais.votingsystem.core.domain.Resultado;
+import dev.danielarrais.votingsystem.api.mapper.PautaMapper;
+import dev.danielarrais.votingsystem.api.mapper.VotoMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -22,41 +25,37 @@ import static org.springframework.http.HttpStatus.*;
 @RequiredArgsConstructor
 public class PautaController {
 
-    private final CriarPautaService criarPautaService;
-    private final CriarSessaoService criarSessaoService;
-    private final RegistrarVotoService registrarVotoService;
+    private final CriarPautaUserCase criarPautaUserCase;
+    private final CriarSessaoUserCase criarSessaoUserCase;
+    private final RegistrarVotoUserCaseImpl registrarVotoUserCaseImpl;
     private final RecuperarResultadoService resultadoService;
+    private final RecuperarPautasUseCase recuperarPautasUseCase;
 
-    @Value("${voting.default-session-duration}")
-    private Integer sessionDuration;
 
     @PostMapping
     @ResponseStatus(CREATED)
     public void criarPauta(@Valid @RequestBody PautaRequest pautaRequest) {
-        criarPautaService.cria(pautaRequest);
+        criarPautaUserCase.cria(PautaMapper.convert(pautaRequest));
+    }
+
+    @GetMapping
+    @ResponseStatus(OK)
+    public List<Pauta> buscarPautas() {
+        return recuperarPautasUseCase.buscarTodasPautas();
     }
 
     @PostMapping("/{pautaId}/sessoes")
     @ResponseStatus(CREATED)
     public void criarSessao(@PathVariable Long pautaId,
-                            @RequestParam(required = false) Integer duracao) {
-        if (duracao == null || duracao == 0) {
-            duracao = sessionDuration;
-        }
-
-        Sessao sessao = Sessao.builder()
-                .dataInicio(LocalDateTime.now())
-                .duracao(duracao)
-                .build();
-
-        criarSessaoService.criar(pautaId, sessao);
+                            @RequestParam(required = false, defaultValue = "${voting.default-session-duration}") Integer duracao) {
+        criarSessaoUserCase.criar(pautaId, SessaoMapper.convert(duracao));
     }
 
     @PostMapping("/{pauta_id}/votos")
     @ResponseStatus(NO_CONTENT)
     public void votar(@PathVariable(name = "pauta_id") Long pautaId,
                       @Valid @RequestBody VotoRequest votoRequest) {
-        registrarVotoService.votar(pautaId, votoRequest);
+        registrarVotoUserCaseImpl.votar(VotoMapper.convert(pautaId, votoRequest));
     }
 
     @GetMapping("/{pauta_id}/resultados")
