@@ -29,13 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 public class RecuperarResultadoServiceTests {
 
     @Mock
-    private PautaRepository pautaRepository;
-
-    @Mock
     private SessaoRepository sessaoRepository;
-
-    @Mock
-    private VotoRepository votoRepository;
 
     @Mock
     private ResultadoRepository resultadoRepository;
@@ -56,7 +50,8 @@ public class RecuperarResultadoServiceTests {
 
     @Test
     public void buscarResultado_darErroQuandoOResultadoNaoFoiProcessado() {
-        Mockito.when(sessaoRepository.sessaoPautaEstarAberta(1L)).thenReturn(Boolean.TRUE);
+        Mockito.when(sessaoRepository.sessaoPautaEstarAberta(1L)).thenReturn(Boolean.FALSE);
+        Mockito.when(resultadoRepository.findByPautaId(1L)).thenReturn(Optional.empty());
 
         var expected = new ResultadosNaoProcessadosException(1L);
 

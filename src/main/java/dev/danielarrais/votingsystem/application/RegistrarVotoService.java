@@ -5,6 +5,7 @@ import dev.danielarrais.votingsystem.application.exceptions.CPFNaoAutorizadoAVot
 import dev.danielarrais.votingsystem.application.exceptions.PautaNaoEncontradaException;
 import dev.danielarrais.votingsystem.application.exceptions.PautaSemSessaoAbertaException;
 import dev.danielarrais.votingsystem.application.exceptions.VotoJaRegistradoException;
+import dev.danielarrais.votingsystem.domain.Voto;
 import dev.danielarrais.votingsystem.infra.database.entities.PautaEntity;
 import dev.danielarrais.votingsystem.infra.database.entities.VotoEntity;
 import dev.danielarrais.votingsystem.infra.database.repositories.PautaRepository;
@@ -25,20 +26,20 @@ public class RegistrarVotoService {
     private final SessaoRepository sessaoRepository;
     private final VotoRepository votoRepository;
 
-    public void votar(Long pautaId, VotoRequest votoRequest) {
+    public void votar(Long pautaId, Voto voto) {
         LocalDateTime horaDoVoto = LocalDateTime.now();
 
         validaSePautaExiste(pautaId);
-        validaAutorizacaoDeVoto(votoRequest.getCpf());
+        validaAutorizacaoDeVoto(voto.getCpf());
         validaSeSessaoDaPautaEstarAberta(pautaId, horaDoVoto);
-        validaSeJaVotou(pautaId, votoRequest.getCpf());
+        validaSeJaVotou(pautaId, voto.getCpf());
 
         PautaEntity pautaEntity = pautaRepository.findById(pautaId).get();
 
         VotoEntity votoEntity = VotoEntity.builder()
                 .pauta(pautaEntity)
-                .voto(votoRequest.getVoto())
-                .cpf(votoRequest.getCpf())
+                .voto(voto.getVoto())
+                .cpf(voto.getCpf())
                 .hora(horaDoVoto)
                 .build();
 
