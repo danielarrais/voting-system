@@ -4,6 +4,9 @@ import dev.danielarrais.votingsystem.api.config.AbstractIT;
 import dev.danielarrais.votingsystem.api.dto.response.PautaResponse;
 import dev.danielarrais.votingsystem.infra.database.entities.PautaEntity;
 import dev.danielarrais.votingsystem.infra.database.repositories.PautaRepository;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +14,13 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.util.ResourceUtils;
+import org.testcontainers.containers.BindMode;
+import org.testcontainers.containers.MySQLContainer;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +29,8 @@ import static org.springframework.http.HttpEntity.EMPTY;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
 
-@Profile("integration-test")
+@Sql({"/initialdata/pautas.sql"})
+@ActiveProfiles(value = "end-to-end-test")
 class PautaControllerTest extends AbstractIT {
     private static final String BASE_URL = "/v1/pautas";
 

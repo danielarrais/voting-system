@@ -2,6 +2,10 @@ spring:
   liquibase:
     change-log: db/changelog/db.changelog-master.yml
     contexts: test
+  datasource:
+    url: jdbc:mysql://localhost:3306/voting-system?createDatabaseIfNotExist=true&serverTimezone=UTC
+    username: teste
+    password: teste
 invert-text:
   base-url: https://api.invertexto.com/v1
   token: '12345'
