@@ -1,16 +1,37 @@
 services:
-  mongo:
-     image: mongodb/mongodb-community-server:6.0-ubi8
-     environment:
-       - MONGO_INITDB_ROOT_USERNAME=user
-       - MONGO_INITDB_ROOT_PASSWORD=pass
-       - MONGO_INITDB_DATABASE=voting-system
-     ports:
-       - 27017:27017
-  rabbitmq:
-    image: 'rabbitmq:latest'
+  mysql:
+    image: mysql:8.0.18
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 5s
+      retries: 10
     environment:
-      - 'RABBITMQ_DEFAULT_PASS=secret'
-      - 'RABBITMQ_DEFAULT_USER=myuser'
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_ROOT_PASSWORD: "pass"
+      MYSQL_DATABASE: "voting-system"
     ports:
-      - '5672'
+      - "3306:3306"
+  rabbitmq:
+    image: 'rabbitmq:3.8.18-management-alpine'
+    environment:
+      - 'RABBITMQ_DEFAULT_PASS=admin'
+      - 'RABBITMQ_DEFAULT_USER=admin'
+    ports:
+      - '5671:5672'
+      - "15671:15672"
+  voting-service:
+    build: .
+    environment:
+      - 'INVERTEXT_TOKEN=${INVERTEXT_TOKEN}'
+      - 'STACKHERO_RABBITMQ_HOST=rabbitmq'
+      - 'RABBITMQ_DEFAULT_USER=admin'
+      - 'STACKHERO_MYSQL_HOST=mysql'
+      - 'STACKHERO_MYSQL_PORT=3306'
+      - 'RABBITMQ_PORT=5671'
+      - 'SESSION_DURATION=1'
+    ports:
+      - '8080:8080'
+    depends_on:
+      mysql:
+        condition: service_healthy

@@ -1,7 +1,30 @@
 spring:
-  data:
-    mongodb:
-      host: ${MONGO_DB_HOST:localhost}
-      username: ${MONGO_DB_USER:pass}
-      database: ${MONGO_DB_DATABASE:voting-system}
-      port: 27017
+  rabbitmq:
+    host: ${STACKHERO_RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5671}
+    username: ${RABBITMQ_USERNAME:admin}
+    password: ${STACKHERO_RABBITMQ_PASSWORD:admin}
+    virtualhost: ${RABBITMQ_VHOST:/}
+    connection-timeout: 10000
+    ssl:
+      enabled: false
+  liquibase:
+    change-log: db/changelog/db.changelog-master.yml
+    default-schema: voting-system
+  jpa:
+    hibernate:
+      ddl-auto: none
+  datasource:
+    url: jdbc:mysql://${STACKHERO_MYSQL_HOST:localhost}:${STACKHERO_MYSQL_PORT:3306}/voting-system?createDatabaseIfNotExist=true&serverTimezone=UTC
+    username: ${STACKHERO_MYSQL_USER:root}
+    password: ${STACKHERO_MYSQL_ROOT_PASSWORD:pass}
+invert-text:
+  base-url: https://api.invertexto.com/v1
+  token: ${INVERTEXT_TOKEN}
+voting:
+  default-session-duration: ${SESSION_DURATION:1}
+  broker:
+    queues:
+      queue-resultado-eleicao: queue-resultado-eleicao
+server:
+  port: ${PORT:8080}
