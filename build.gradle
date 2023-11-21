@@ -47,3 +47,17 @@ tasks.named('bootBuildImage') {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+tasks.register('stage') {
+    dependsOn["build", 'clean']
+}
+
+
+jar {
+    enabled = false
+    manifest {
+        attributes('Main-Class': 'dev.danielarrais.votingsystem.VotingSystemApplication')
+    }
+}
+
+build.mustRunAfter clean
