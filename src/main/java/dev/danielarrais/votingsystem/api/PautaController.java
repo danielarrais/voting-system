@@ -3,9 +3,7 @@ package dev.danielarrais.votingsystem.api;
 import dev.danielarrais.votingsystem.api.dto.request.PautaRequest;
 import dev.danielarrais.votingsystem.api.dto.request.VotoRequest;
 import dev.danielarrais.votingsystem.api.mapper.SessaoMapper;
-import dev.danielarrais.votingsystem.core.application.service.in.CriarPautaUserCase;
-import dev.danielarrais.votingsystem.core.application.service.in.CriarSessaoUserCase;
-import dev.danielarrais.votingsystem.core.application.service.in.BuscarPautasUseCase;
+import dev.danielarrais.votingsystem.core.application.service.in.*;
 import dev.danielarrais.votingsystem.core.application.service.in.impl.BuscarResultadoUseCaseImpl;
 import dev.danielarrais.votingsystem.core.application.service.in.impl.RegistrarVotoUserCaseImpl;
 import dev.danielarrais.votingsystem.core.domain.Pauta;
@@ -27,8 +25,8 @@ public class PautaController {
 
     private final CriarPautaUserCase criarPautaUserCase;
     private final CriarSessaoUserCase criarSessaoUserCase;
-    private final RegistrarVotoUserCaseImpl registrarVotoUserCaseImpl;
-    private final BuscarResultadoUseCaseImpl resultadoService;
+    private final RegistrarVotoUserCase registrarVotoUserCaseImpl;
+    private final BuscarResultadosUseCase resultadoService;
     private final BuscarPautasUseCase buscarPautasUseCase;
 
 

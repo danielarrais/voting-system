@@ -18,7 +18,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class ProcessarResultadoVotosUseCaseImpl implements ProcessarResultadoVotosUseCase {
-    // FIXME: 21/11/2023 INCOMPLETO
+
     private final RecuperarPautaService recuperarPautaService;
     private final RecuperarVotosService recuperarVotosService;
     private final RecuperarSessaoService recuperarSessaoService;
@@ -43,11 +43,13 @@ public class ProcessarResultadoVotosUseCaseImpl implements ProcessarResultadoVot
 
     @Transactional
     public void publicar() {
-        var pautas = recuperarPautaService.buscarPautasSemResultados();
-        pautas.forEach(pautaId -> {
-            var resultado = processarResultado(pautaId);
-            publicar(resultado);
-        });
+        recuperarPautaService.buscarPautasSemResultados()
+                .forEach(this::publicarResultado);
+    }
+
+    private void publicarResultado(Long pautaId) {
+        var resultado = processarResultado(pautaId);
+        publicar(resultado);
     }
 
     public Resultado processarVotos(List<Voto> votos, Long pautaId) {
@@ -78,19 +80,7 @@ public class ProcessarResultadoVotosUseCaseImpl implements ProcessarResultadoVot
     }
 
     private ResultadoEnum processaResultado(Pair<Integer, Integer> contagemDeVotos) {
-        if (contagemDeVotos.getLeft().equals(0) && contagemDeVotos.getRight().equals(0) ) {
-            return ResultadoEnum.ABSTENCAO;
-        }
-
-        if (contagemDeVotos.getLeft() > contagemDeVotos.getRight()) {
-            return ResultadoEnum.APROVADA;
-        }
-
-        if (contagemDeVotos.getLeft().equals(contagemDeVotos.getRight())) {
-            return ResultadoEnum.EMPATADA;
-        }
-
-        return ResultadoEnum.REPROVADA;
+        return ResultadoEnum.getResult(contagemDeVotos.getLeft(), contagemDeVotos.getRight());
     }
 
     private void validaSeSessaoDaPautaEstarAberta(Long pautaId) {
