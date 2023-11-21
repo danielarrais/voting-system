@@ -8,18 +8,18 @@ básico para realizar tal tarefa.
 Usei a aplicação para refinar meus conhecimentos de arquitetura, afinal testes como esse são demorados então sempre os
 aproveito como objeto de estudo. Logo acabei causando adicionando alguma complexidade.
 
+## Execução local
+
+Para rodar atender aos requisitos e executar `docker compose up` na raiz do projeto, aguardar iniciar e acessar [http://localhost:8080/swagger-ui/index.html#/pauta-controller/resultados](http://localhost:8080/swagger-ui/index.html#/pauta-controller/resultados).
+
 ## Requisitos para execução
 
-* Criar token no site [invertext.com](invertext.com) para usar seu validador de CPF e armazenar ele localmente em uma
-  variável de ambiente chamada `INVERTEXT_TOKEN`:
+1. Criar token no site [invertext.com](invertext.com) para usar seu validador de CPF e armazenar ele localmente em uma
+variável de ambiente chamada `INVERTEXT_TOKEN`:
 
   ![image](https://github.com/danielarrais/voting-system/assets/28496479/21087259-bb22-4367-99ca-2d129ffa3aea)
 
-* Ter o docker instalado
-
-## Execução
-
-Para rodar a aplicação localmente basta executar `docker compose up` na raiz do projeto
+2. Ter o docker instalado
 
 ### Variáveis de ambiente
 
@@ -31,7 +31,7 @@ A aplicação tem várias váriáveis de ambiente para configurar recursos inter
 * **RABBITMQ_PORT**: Porta do RabbitMQ
 * **RABBITMQ_USERNAME**: Usuário do RabbitMQ
 * **RABBITMQ_VHOST**: Host virtual do RabbitMQ
-* 
+
 #### MySQL
 * **STACKHERO_MYSQL_HOST**: Host do mysql
 * **STACKHERO_MYSQL_PORT**: Porta do mysql
@@ -44,11 +44,6 @@ A aplicação tem várias váriáveis de ambiente para configurar recursos inter
 #### Aplicação
 * **SESSION_DURATION**: Duração padrão da sessão de votação
 * **PORT**: Porta que a aplicação deve utilizar
-
-## Acesso Local
-
-Para testar essa aplicação localmente
-acesse [http://localhost:8080/swagger-ui/index.html#/pauta-controller/resultados](http://localhost:8080/swagger-ui/index.html#/pauta-controller/resultados)
 
 ## Acesso em cloud
 

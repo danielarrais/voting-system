@@ -1,6 +1,8 @@
 package dev.danielarrais.votingsystem.infra.feign.service;
 
+import dev.danielarrais.votingsystem.core.application.exceptions.PautaNaoEncontradaException;
 import dev.danielarrais.votingsystem.core.application.service.out.ValidaCpfService;
+import dev.danielarrais.votingsystem.infra.exceptions.FalhaAoValidarCPFNoInvertextException;
 import dev.danielarrais.votingsystem.infra.feign.CpfValido;
 import dev.danielarrais.votingsystem.infra.feign.InvertextClient;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +15,11 @@ public class ValidaCpfServiceImpl implements ValidaCpfService {
 
     @Override
     public boolean cpfValido(String cpf) {
-        var cpfValido = invertextClient.cpfValido(cpf);
-        return cpfValido != null && cpfValido.getValido();
+        try {
+            var cpfValido = invertextClient.cpfValido(cpf);
+            return cpfValido != null && cpfValido.getValido();
+        } catch (Exception e) {
+            throw new FalhaAoValidarCPFNoInvertextException(e);
+        }
     }
 }

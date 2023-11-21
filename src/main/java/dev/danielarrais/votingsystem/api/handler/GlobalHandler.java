@@ -2,6 +2,7 @@ package dev.danielarrais.votingsystem.api.handler;
 
 import dev.danielarrais.votingsystem.api.dto.response.ErroResponse;
 import dev.danielarrais.votingsystem.core.application.exceptions.NegocioException;
+import dev.danielarrais.votingsystem.infra.exceptions.FalhaAoValidarCPFNoInvertextException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -22,8 +23,8 @@ import java.util.Map;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 public class GlobalHandler {
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public ErroResponse generalException(Exception ex) {
         log.error(ex.getMessage(), ex);
@@ -33,8 +34,19 @@ public class GlobalHandler {
                 .build();
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(FalhaAoValidarCPFNoInvertextException.class)
+    public ErroResponse falhaAoValidarCPFNoInvertextException(Exception ex) {
+        log.error(ex.getMessage(), ex);
+        return ErroResponse.builder()
+                .codigo(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .mensagem("Falha ao validar o CPF")
+                .build();
+    }
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(NegocioException.class)
     public ErroResponse negocioExceptionHandler(NegocioException ex) {
         log.error(ex.getMessage(), ex);
@@ -44,8 +56,8 @@ public class GlobalHandler {
                 .build();
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BindException.class)
     public ErroResponse bindValidationException(BindException ex) {
         log.error(ex.getMessage(), ex);
