@@ -15,7 +15,7 @@ spring:
     hibernate:
       ddl-auto: none
   datasource:
-    url: jdbc:mysql://${STACKHERO_MYSQL_HOST:localhost}:3306/voting-system?createDatabaseIfNotExist=true&serverTimezone=UTC&useSSL=false
+    url: jdbc:mysql://${STACKHERO_MYSQL_HOST:localhost}:3306/voting-system?createDatabaseIfNotExist=true&serverTimezone=UTC
     username: ${STACKHERO_MYSQL_USER:root}
     password: ${STACKHERO_MYSQL_ROOT_PASSWORD:pass}
 invert-text:
@@ -26,3 +26,5 @@ voting:
   broker:
     queues:
       queue-resultado-eleicao: queue-resultado-eleicao
+server:
+  port: ${PORT:8080}
