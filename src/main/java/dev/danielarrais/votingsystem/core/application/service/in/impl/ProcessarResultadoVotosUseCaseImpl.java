@@ -41,13 +41,13 @@ public class ProcessarResultadoVotosUseCaseImpl implements ProcessarResultadoVot
         publicarResultadoService.publicar(resultado);
     }
 
-    @Transactional
     public void publicar() {
         recuperarPautaService.buscarPautasSemResultados()
                 .forEach(this::publicarResultado);
     }
 
-    private void publicarResultado(Long pautaId) {
+    @Transactional
+    public void publicarResultado(Long pautaId) {
         var resultado = processarResultado(pautaId);
         try {
             publicar(resultado);
