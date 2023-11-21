@@ -1,8 +1,6 @@
 package dev.danielarrais.votingsystem.infra.database.mapper;
 
-import dev.danielarrais.votingsystem.core.domain.Pauta;
 import dev.danielarrais.votingsystem.core.domain.Resultado;
-import dev.danielarrais.votingsystem.infra.database.entities.PautaEntity;
 import dev.danielarrais.votingsystem.infra.database.entities.ResultadoEntity;
 import lombok.experimental.UtilityClass;
 
@@ -13,6 +11,14 @@ public class ResultadoMapper {
                 .resultado(resultado.getResultado())
                 .votosFavoraveis(resultado.getVotosFavoraveis())
                 .votosContrarios(resultado.getVotosContrarios())
+                .build();
+    }
+    public Resultado convert(ResultadoEntity resultadoEntity) {
+        return Resultado.builder()
+                .pautaId(resultadoEntity.getPauta().getId())
+                .resultado(resultadoEntity.getResultado())
+                .votosFavoraveis(resultadoEntity.getVotosFavoraveis())
+                .votosContrarios(resultadoEntity.getVotosContrarios())
                 .build();
     }
 }

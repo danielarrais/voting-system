@@ -1,9 +1,9 @@
 package dev.danielarrais.votingsystem.application;
 
-import dev.danielarrais.votingsystem.core.application.RecuperarResultadoService;
 import dev.danielarrais.votingsystem.core.application.dto.ResultadoEnum;
 import dev.danielarrais.votingsystem.core.application.exceptions.PautaEmVotacaoException;
 import dev.danielarrais.votingsystem.core.application.exceptions.ResultadosNaoProcessadosException;
+import dev.danielarrais.votingsystem.core.application.service.in.impl.BuscarResultadoUseCaseImpl;
 import dev.danielarrais.votingsystem.core.domain.Resultado;
 import dev.danielarrais.votingsystem.infra.database.entities.ResultadoEntity;
 import dev.danielarrais.votingsystem.infra.database.repositories.ResultadoRepository;
@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class RecuperarResultadoServiceTests {
+public class BuscarResultadoServiceTests {
 
     @Mock
     private SessaoRepository sessaoRepository;
@@ -33,7 +33,7 @@ public class RecuperarResultadoServiceTests {
     private ResultadoRepository resultadoRepository;
 
     @InjectMocks
-    private RecuperarResultadoService resultadoService;
+    private BuscarResultadoUseCaseImpl resultadoService;
 
     @Test
     public void buscarResultado_darErroQuandoASessaEstarAberta() {
