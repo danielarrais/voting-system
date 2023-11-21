@@ -1,26 +1,23 @@
 package dev.danielarrais.votingsystem.application;
 
-import dev.danielarrais.votingsystem.application.exceptions.PautaComSessaoJaRegistradaException;
-import dev.danielarrais.votingsystem.application.exceptions.PautaNaoEncontradaException;
-import dev.danielarrais.votingsystem.domain.Sessao;
-import dev.danielarrais.votingsystem.infra.database.entities.PautaEntity;
-import dev.danielarrais.votingsystem.infra.database.repositories.PautaRepository;
-import dev.danielarrais.votingsystem.infra.database.repositories.SessaoRepository;
-import org.assertj.core.api.Assertions;
+import dev.danielarrais.votingsystem.core.application.exceptions.PautaComSessaoJaRegistradaException;
+import dev.danielarrais.votingsystem.core.application.service.in.impl.CriarSessaoUserCaseImpl;
+import dev.danielarrais.votingsystem.core.application.service.out.RecuperarSessaoService;
+import dev.danielarrais.votingsystem.core.application.service.out.RegistraSessaoService;
+import dev.danielarrais.votingsystem.core.domain.Sessao;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,36 +25,21 @@ import static org.mockito.Mockito.when;
 public class CriarSessaoServiceTests {
 
     @Mock
-    private PautaRepository pautaRepository;
+    private RegistraSessaoService registraSessaoService;
 
     @Mock
-    private SessaoRepository sessaoRepository;
+    private RecuperarSessaoService recuperarSessaoService;
 
     @InjectMocks
-    private CriarSessaoService criarSessaoService;
+    private CriarSessaoUserCaseImpl criarSessaoUserCase;
 
-    @Test
-    public void criar_falhaComPautaInvalida() {
-        when(pautaRepository.findById(1L)).thenReturn(Optional.empty());
-
-        Exception exception = assertThrows(PautaNaoEncontradaException.class, () -> {
-            criarSessaoService.criar(1L, generateValidSession());
-        });
-
-        Exception expected = new PautaNaoEncontradaException(1L);
-
-        assertThat(exception)
-                .extracting(Throwable::getMessage)
-                .isEqualTo(expected.getMessage());
-    }
 
     @Test
     public void criar_falhaQuandoAPautaJaTemSessao() {
-        when(pautaRepository.findById(1L)).thenReturn(Optional.of(new PautaEntity()));
-        when(sessaoRepository.existsByPautaId(1L)).thenReturn(Boolean.TRUE);
+        when(recuperarSessaoService.existePautaPeloId(1L)).thenReturn(Boolean.TRUE);
 
         Exception exception = assertThrows(PautaComSessaoJaRegistradaException.class, () -> {
-            criarSessaoService.criar(1L, generateValidSession());
+            criarSessaoUserCase.criar(1L, generateValidSession());
         });
 
         Exception expected = new PautaComSessaoJaRegistradaException(1L);
@@ -69,11 +51,10 @@ public class CriarSessaoServiceTests {
 
     @Test
     public void criar_naoDarErro() {
-        when(pautaRepository.findById(1L)).thenReturn(Optional.of(new PautaEntity()));
-        when(sessaoRepository.existsByPautaId(1L)).thenReturn(Boolean.FALSE);
+        when(recuperarSessaoService.existePautaPeloId(1L)).thenReturn(Boolean.FALSE);
 
         assertDoesNotThrow(() -> {
-            criarSessaoService.criar(1L, generateValidSession());
+            criarSessaoUserCase.criar(1L, generateValidSession());
         });
     }
 
@@ -83,6 +64,4 @@ public class CriarSessaoServiceTests {
                 .duracao(1)
                 .build();
     }
-
-    //
 }

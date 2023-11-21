@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class QueuesCreator {
 
-    @Value("${broker.queues.queue-resultado-eleicao}")
+    @Value("${voting.broker.queues.queue-resultado-eleicao}")
     private String queueResultadoEleicao;
 
     @Bean

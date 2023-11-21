@@ -9,5 +9,5 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface InvertextClient {
 
     @GetMapping(path = "/validator")
-    CPFValido cpfValido(@RequestParam(name = "value") String CPF);
+    CpfValido cpfValido(@RequestParam(name = "value") String cpf);
 }
