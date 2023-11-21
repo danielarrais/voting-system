@@ -10,10 +10,11 @@ aproveito como objeto de estudo. Logo acabei causando adicionando alguma complex
 
 ## Requisitos para execução
 
-* Criar token no site [invertext.com]() para usar seu validador de CPF e armazenar ele localmente em uma variável de ambiente chamada `INVERTEXT_TOKEN`:
+* Criar token no site [invertext.com](invertext.com) para usar seu validador de CPF e armazenar ele localmente em uma
+  variável de ambiente chamada `INVERTEXT_TOKEN`:
 
-    ![image](https://github.com/danielarrais/voting-system/assets/28496479/21087259-bb22-4367-99ca-2d129ffa3aea)
-  
+  ![image](https://github.com/danielarrais/voting-system/assets/28496479/21087259-bb22-4367-99ca-2d129ffa3aea)
+
 * Ter o docker instalado
 
 ## Execução
@@ -22,16 +23,38 @@ Para rodar a aplicação localmente basta executar `docker compose up` na raiz d
 
 ## Acesso Local
 
-Para testar essa aplicação localmente acesse (http://localhost:8080/swagger-ui/index.html#/pauta-controller/resultados)[http://localhost:8080/swagger-ui/index.html#/pauta-controller/resultados]
+Para testar essa aplicação localmente
+acesse [http://localhost:8080/swagger-ui/index.html#/pauta-controller/resultados](http://localhost:8080/swagger-ui/index.html#/pauta-controller/resultados)
 
 ## Acesso em cloud
 
-Você pode acessar a aplicação online para testes neste (link)[https://voting-service-1e6c6ca48389.herokuapp.com/swagger-ui/index.html#/pauta-controller/resultados].
+Você pode acessar a aplicação online para testes
+neste [link](https://voting-service-1e6c6ca48389.herokuapp.com/swagger-ui/index.html#/pauta-controller/resultados).
+
+## Endpoints
+
+* **GET /pautas**: retorna pautas cadastradas
+* **POST /pautas**: cadastra pauta. Abaixo exemplo de body da requisição:
+  ```json
+  {
+     "titulo": "Porcentagem de lucros",
+     "descricao": "Diz respeito ao aumento de 1% na faixa de lucro distribuído"
+  }
+  ```
+* **POST /pautas/{pautaId}/votos**: cadastra pauta. Abaixo exemplo de body da requisição:
+  ```json
+  {
+     "cpf": "06412721380",
+     "voto": false
+  }
+  ```
+* **POST /pautas/{pautaId}/sessoes**: abre sessão de votação.
+* **GET /pautas/{pautaId}/resultados**: retorna resultados da votação
 
 ## Arquitetura
 
-Eu utilizei arquitetura hexagonal para organizar e desacoplar as camadas da minha aplicação. Criei as seguintes camadas e
-estrutura:
+Eu utilizei arquitetura hexagonal para organizar e desacoplar as camadas da minha aplicação. Criei as seguintes camadas
+e estrutura:
 
 ```shell
 ├── api # Camada que expõe os endpoints
@@ -42,3 +65,16 @@ estrutura:
 ```
 
 ![Diagrama sem nome drawio](https://github.com/danielarrais/voting-system/assets/28496479/1516e586-e998-41d2-b8c8-51c6ac6a502a)
+
+## Recursos externos
+
+* **Mysql**: Banco de dados utilizado para armazenar os pautas, sessões, votos e resultados
+* **Invertext.com**: API utilizada para validar CPF
+* **RabbitMQ**: Mensageria utilizada para publicar os resultados para outros clientes
+
+## Melhorias
+
+* Implementar restante dos endpoints;
+* Salvar os resultados em um banco de dado com mais disponibilidades, tipo o mongodb, para disponibilizar os resultados
+  de forma mais performática;
+* Utilizar mais recursos do swagger para detalhar melhor o body e outras informações dos endpoints;
