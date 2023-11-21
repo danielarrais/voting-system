@@ -21,6 +21,30 @@ aproveito como objeto de estudo. Logo acabei causando adicionando alguma complex
 
 Para rodar a aplicação localmente basta executar `docker compose up` na raiz do projeto
 
+### Variáveis de ambiente
+
+A aplicação tem várias váriáveis de ambiente para configurar recursos internos e externos:
+
+#### RabbitMQ
+* **STACKHERO_RABBITMQ_HOST**: Host do rabbit
+* **STACKHERO_RABBITMQ_PASSWORD**: Senha do RabbitMQ
+* **RABBITMQ_PORT**: Porta do RabbitMQ
+* **RABBITMQ_USERNAME**: Usuário do RabbitMQ
+* **RABBITMQ_VHOST**: Host virtual do RabbitMQ
+* 
+#### MySQL
+* **STACKHERO_MYSQL_HOST**: Host do mysql
+* **STACKHERO_MYSQL_PORT**: Porta do mysql
+* **STACKHERO_MYSQL_USER**: Usuário do mysql
+* **STACKHERO_MYSQL_ROOT_PASSWORD**: Senha do mysql
+
+#### API de validação de CPF
+* **INVERTEXT_TOKEN**: Token de acesso do invertext.com
+
+#### Aplicação
+* **SESSION_DURATION**: Duração padrão da sessão de votação
+* **PORT**: Porta que a aplicação deve utilizar
+
 ## Acesso Local
 
 Para testar essa aplicação localmente
