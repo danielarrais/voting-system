@@ -51,16 +51,16 @@ public class PautaController {
         criarSessaoUserCase.criar(pautaId, SessaoMapper.convert(duracao));
     }
 
-    @PostMapping("/{pauta_id}/votos")
+    @PostMapping("/{pautaId}/votos")
     @ResponseStatus(NO_CONTENT)
-    public void votar(@PathVariable(name = "pauta_id") Long pautaId,
+    public void votar(@PathVariable(name = "pautaId") Long pautaId,
                       @Valid @RequestBody VotoRequest votoRequest) {
         registrarVotoUserCaseImpl.votar(VotoMapper.convert(pautaId, votoRequest));
     }
 
-    @GetMapping("/{pauta_id}/resultados")
+    @GetMapping("/{pautaId}/resultados")
     @ResponseStatus(OK)
-    public Resultado resultados(@PathVariable(name = "pauta_id") Long pautaId) {
+    public Resultado resultados(@PathVariable(name = "pautaId") Long pautaId) {
         return resultadoService.buscarResultado(pautaId);
     }
 
