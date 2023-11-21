@@ -2,6 +2,10 @@ services:
   mysql:
     image: mysql:8.0.18
     command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 5s
+      retries: 10
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_ROOT_PASSWORD: "pass"
@@ -14,5 +18,20 @@ services:
       - 'RABBITMQ_DEFAULT_PASS=admin'
       - 'RABBITMQ_DEFAULT_USER=admin'
     ports:
-      - '5672:5672'
-      - "15672:15672"
+      - '5671:5672'
+      - "15671:15672"
+  voting-service:
+    build: .
+    environment:
+      - 'INVERTEXT_TOKEN=${INVERTEXT_TOKEN}'
+      - 'STACKHERO_RABBITMQ_HOST=rabbitmq'
+      - 'RABBITMQ_DEFAULT_USER=admin'
+      - 'STACKHERO_MYSQL_HOST=mysql'
+      - 'STACKHERO_MYSQL_PORT=3306'
+      - 'RABBITMQ_PORT=5671'
+      - 'SESSION_DURATION=1'
+    ports:
+      - '8080:8080'
+    depends_on:
+      mysql:
+        condition: service_healthy
