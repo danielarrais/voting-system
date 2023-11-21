@@ -12,7 +12,7 @@ aproveito como objeto de estudo. Logo acabei causando adicionando alguma complex
 
 Para rodar atender aos requisitos e executar `docker compose up` na raiz do projeto, aguardar iniciar e acessar [http://localhost:8080/swagger-ui/index.html#/pauta-controller/resultados](http://localhost:8080/swagger-ui/index.html#/pauta-controller/resultados).
 
-## Requisitos para execução
+### Requisitos
 
 1. Criar token no site [invertext.com](invertext.com) para usar seu validador de CPF e armazenar ele localmente em uma
 variável de ambiente chamada `INVERTEXT_TOKEN`:
