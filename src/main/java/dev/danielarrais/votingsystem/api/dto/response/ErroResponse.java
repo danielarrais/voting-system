@@ -10,10 +10,10 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
-public class ErrorResponse {
+public class ErroResponse {
     @Builder.Default
-    private String date = Instant.now().toString();
-    private int code;
-	private String message;
-	private List<String> details;
+    private String data = Instant.now().toString();
+    private int codigo;
+	private String mensagem;
+	private List<String> erros;
 }
