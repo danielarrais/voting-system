@@ -1,4 +1,4 @@
-package dev.danielarrais.votingsystem.application;
+package dev.danielarrais.votingsystem.core.application.service.in;
 
 import dev.danielarrais.votingsystem.core.application.exceptions.PautaComSessaoJaRegistradaException;
 import dev.danielarrais.votingsystem.core.application.service.in.impl.CriarSessaoUserCaseImpl;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class CriarSessaoServiceTests {
+public class CriarSessaoUseCaseTests {
 
     @Mock
     private RegistraSessaoService registraSessaoService;

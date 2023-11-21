@@ -1,4 +1,4 @@
-package dev.danielarrais.votingsystem.application;
+package dev.danielarrais.votingsystem.core.application.service.in;
 
 import dev.danielarrais.votingsystem.core.application.exceptions.CpfNaoAutorizadoAVotarException;
 import dev.danielarrais.votingsystem.core.application.exceptions.PautaNaoEncontradaException;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class RegistrarVotoServiceTests {
+public class RegistrarVotoUseCaseTests {
 
     private final String CPF_VALIDO = "064127324234";
     private final String CPF_INVALIDO = "345345345345";
