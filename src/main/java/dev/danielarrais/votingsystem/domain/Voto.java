@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 public class Voto {
     private Long id;
-    private String CPF;
+    private String cpf;
     private LocalDateTime hora;
     private Boolean voto;
 }
