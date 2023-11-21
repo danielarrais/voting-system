@@ -1,15 +1,15 @@
-package dev.danielarrais.votingsystem.application;
+package dev.danielarrais.votingsystem.core.application.service.in;
 
 import dev.danielarrais.votingsystem.core.application.dto.ResultadoEnum;
 import dev.danielarrais.votingsystem.core.application.exceptions.PautaEmVotacaoException;
 import dev.danielarrais.votingsystem.core.application.service.in.impl.ProcessarResultadoVotosUseCaseImpl;
+import dev.danielarrais.votingsystem.core.application.service.out.RecuperarPautaService;
+import dev.danielarrais.votingsystem.core.application.service.out.RecuperarSessaoService;
+import dev.danielarrais.votingsystem.core.application.service.out.RecuperarVotosService;
+import dev.danielarrais.votingsystem.core.application.service.out.SalvarResultadoService;
+import dev.danielarrais.votingsystem.core.domain.Resultado;
 import dev.danielarrais.votingsystem.core.domain.Voto;
 import dev.danielarrais.votingsystem.infra.database.entities.PautaEntity;
-import dev.danielarrais.votingsystem.infra.database.entities.ResultadoEntity;
-import dev.danielarrais.votingsystem.infra.database.repositories.PautaRepository;
-import dev.danielarrais.votingsystem.infra.database.repositories.ResultadoRepository;
-import dev.danielarrais.votingsystem.infra.database.repositories.SessaoRepository;
-import dev.danielarrais.votingsystem.infra.database.repositories.VotoRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,19 +31,19 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class ProcessarResultadoVotosServiceTests {
+public class ProcessarResultadoVotosUseCaseTests {
 
     @Mock
-    private PautaRepository pautaRepository;
+    private RecuperarPautaService pautaRepository;
 
     @Mock
-    private SessaoRepository sessaoRepository;
+    private RecuperarSessaoService sessaoRepository;
 
     @Mock
-    private VotoRepository votoRepository;
+    private RecuperarVotosService votoRepository;
 
     @Mock
-    private ResultadoRepository resultadoRepository;
+    private SalvarResultadoService resultadoRepository;
 
     @InjectMocks
     private ProcessarResultadoVotosUseCaseImpl processarResultadoVotosService;
@@ -63,9 +63,8 @@ public class ProcessarResultadoVotosServiceTests {
                 .isEqualTo(expected.getMessage());
 
         verify(sessaoRepository, times(1)).sessaoDaPautaEstarAberta(any());
-        verify(votoRepository, never()).findByPautaId(any());
-        verify(pautaRepository, never()).findLockById(any());
-        verify(resultadoRepository, never()).save(any());
+        verify(votoRepository, never()).buscaVotosDaPauta(any());
+        verify(resultadoRepository, never()).salvar(any());
     }
 
     @Test
@@ -77,9 +76,8 @@ public class ProcessarResultadoVotosServiceTests {
         });
 
         verify(sessaoRepository, times(1)).sessaoDaPautaEstarAberta(any());
-        verify(votoRepository, times(1)).findByPautaId(any());
-        verify(pautaRepository, times(1)).findLockById(any());
-        verify(resultadoRepository, times(1)).save(any());
+        verify(votoRepository, times(1)).buscaVotosDaPauta(any());
+        verify(resultadoRepository, times(1)).salvar(any());
     }
 
     @Test
@@ -87,11 +85,11 @@ public class ProcessarResultadoVotosServiceTests {
         var votos = geraVotosComMaisFavoraveis();
         var pauta = gerarPauta();
         var resultado = processarResultadoVotosService.processarVotos(votos, pauta.getId());
-        var esperado = ResultadoEntity.builder()
+        var esperado = Resultado.builder()
                 .votosFavoraveis(2)
                 .votosContrarios(1)
                 .resultado(ResultadoEnum.APROVADA.name())
-                .pauta(pauta)
+                .pautaId(pauta.getId())
                 .build();
 
         assertThat(resultado)
@@ -105,11 +103,11 @@ public class ProcessarResultadoVotosServiceTests {
         var votos = geraVotosEmpatados();
         var pauta = gerarPauta();
         var resultado = processarResultadoVotosService.processarVotos(votos, pauta.getId());
-        var esperado = ResultadoEntity.builder()
+        var esperado = Resultado.builder()
                 .votosFavoraveis(1)
                 .votosContrarios(1)
                 .resultado(ResultadoEnum.EMPATADA.name())
-                .pauta(pauta)
+                .pautaId(pauta.getId())
                 .build();
 
         assertThat(resultado)
@@ -123,11 +121,11 @@ public class ProcessarResultadoVotosServiceTests {
         var votos = geraVotosAbstencao();
         var pauta = gerarPauta();
         var resultado = processarResultadoVotosService.processarVotos(votos, pauta.getId());
-        var esperado = ResultadoEntity.builder()
+        var esperado = Resultado.builder()
                 .votosFavoraveis(0)
                 .votosContrarios(0)
                 .resultado(ResultadoEnum.ABSTENCAO.name())
-                .pauta(pauta)
+                .pautaId(pauta.getId())
                 .build();
 
         assertThat(resultado)
@@ -141,11 +139,11 @@ public class ProcessarResultadoVotosServiceTests {
         var votos = geraVotosReprovacao();
         var pauta = gerarPauta();
         var resultado = processarResultadoVotosService.processarVotos(votos, pauta.getId());
-        var esperado = ResultadoEntity.builder()
+        var esperado = Resultado.builder()
                 .votosFavoraveis(1)
                 .votosContrarios(2)
                 .resultado(ResultadoEnum.REPROVADA.name())
-                .pauta(pauta)
+                .pautaId(pauta.getId())
                 .build();
 
         assertThat(resultado)

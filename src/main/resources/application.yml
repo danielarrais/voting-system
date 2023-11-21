@@ -1,9 +1,9 @@
 spring:
   rabbitmq:
-    host: ${RABBITMQ_ADDRESS:localhost}
-    port: ${RABBITMQ_PORT:5672}
+    host: ${STACKHERO_RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5671}
     username: ${RABBITMQ_USERNAME:admin}
-    password: ${RABBITMQ_PASSWORD:admin}
+    password: ${STACKHERO_RABBITMQ_PASSWORD:admin}
     virtualhost: ${RABBITMQ_VHOST:/}
     connection-timeout: 10000
     ssl:
@@ -15,9 +15,9 @@ spring:
     hibernate:
       ddl-auto: none
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:3306/voting-system?createDatabaseIfNotExist=true&serverTimezone=UTC&useSSL=false
-    username: root
-    password: pass
+    url: jdbc:mysql://${STACKHERO_MYSQL_HOST:localhost}:3306/voting-system?createDatabaseIfNotExist=true&serverTimezone=UTC&useSSL=false
+    username: ${STACKHERO_MYSQL_USER:root}
+    password: ${STACKHERO_MYSQL_ROOT_PASSWORD:pass}
 invert-text:
   base-url: https://api.invertexto.com/v1
   token: ${INVERTEXT_TOKEN}

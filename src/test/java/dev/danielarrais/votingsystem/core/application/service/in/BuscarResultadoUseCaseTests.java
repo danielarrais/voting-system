@@ -1,9 +1,11 @@
-package dev.danielarrais.votingsystem.application;
+package dev.danielarrais.votingsystem.core.application.service.in;
 
 import dev.danielarrais.votingsystem.core.application.dto.ResultadoEnum;
 import dev.danielarrais.votingsystem.core.application.exceptions.PautaEmVotacaoException;
 import dev.danielarrais.votingsystem.core.application.exceptions.ResultadosNaoProcessadosException;
 import dev.danielarrais.votingsystem.core.application.service.in.impl.BuscarResultadoUseCaseImpl;
+import dev.danielarrais.votingsystem.core.application.service.out.RecuperarResultadoService;
+import dev.danielarrais.votingsystem.core.application.service.out.RecuperarSessaoService;
 import dev.danielarrais.votingsystem.core.domain.Resultado;
 import dev.danielarrais.votingsystem.infra.database.entities.ResultadoEntity;
 import dev.danielarrais.votingsystem.infra.database.repositories.ResultadoRepository;
@@ -24,13 +26,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public class BuscarResultadoServiceTests {
+public class BuscarResultadoUseCaseTests {
 
     @Mock
-    private SessaoRepository sessaoRepository;
+    private RecuperarSessaoService sessaoRepository;
 
     @Mock
-    private ResultadoRepository resultadoRepository;
+    private RecuperarResultadoService resultadoRepository;
 
     @InjectMocks
     private BuscarResultadoUseCaseImpl resultadoService;
@@ -47,28 +49,15 @@ public class BuscarResultadoServiceTests {
     }
 
     @Test
-    public void buscarResultado_darErroQuandoOResultadoNaoFoiProcessado() {
-        Mockito.when(sessaoRepository.sessaoDaPautaEstarAberta(1L)).thenReturn(Boolean.FALSE);
-        Mockito.when(resultadoRepository.findByPautaId(1L)).thenReturn(Optional.empty());
-
-        var expected = new ResultadosNaoProcessadosException(1L);
-
-        assertThatThrownBy(() -> resultadoService.buscarResultado(1L))
-                .isInstanceOf(ResultadosNaoProcessadosException.class)
-                .hasMessage(expected.getMessage());
-    }
-
-    @Test
     public void buscarResultado_trazOsResultados() {
-        var resultadoEsperado = ResultadoEntity.builder()
+        var resultadoEsperado = Resultado.builder()
                 .resultado(ResultadoEnum.REPROVADA.name())
                 .votosFavoraveis(2)
                 .votosContrarios(1)
-                .id(1L)
                 .build();
 
         Mockito.when(sessaoRepository.sessaoDaPautaEstarAberta(1L)).thenReturn(Boolean.FALSE);
-        Mockito.when(resultadoRepository.findByPautaId(1L)).thenReturn(Optional.of(resultadoEsperado));
+        Mockito.when(resultadoRepository.buscarResultadoDaPauta(1L)).thenReturn(resultadoEsperado);
 
         var resultado = resultadoService.buscarResultado(1L);
 
