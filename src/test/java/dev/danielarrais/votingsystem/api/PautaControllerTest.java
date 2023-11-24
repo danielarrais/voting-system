@@ -4,23 +4,13 @@ import dev.danielarrais.votingsystem.api.config.AbstractIT;
 import dev.danielarrais.votingsystem.api.dto.response.PautaResponse;
 import dev.danielarrais.votingsystem.infra.database.entities.PautaEntity;
 import dev.danielarrais.votingsystem.infra.database.repositories.PautaRepository;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.util.ResourceUtils;
-import org.testcontainers.containers.BindMode;
-import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,8 +19,8 @@ import static org.springframework.http.HttpEntity.EMPTY;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.OK;
 
-@Sql({"/initialdata/pautas.sql"})
-@ActiveProfiles(value = "end-to-end-test")
+
+@Testcontainers
 class PautaControllerTest extends AbstractIT {
     private static final String BASE_URL = "/v1/pautas";
 
@@ -40,11 +30,33 @@ class PautaControllerTest extends AbstractIT {
     @Autowired
     private PautaRepository pautaRepository;
 
+    @BeforeAll
+    public static void configurar() {
+        mySQLContainer.withReuse(true).start();
+    }
+
+    @AfterAll
+    public static void parar() {
+        mySQLContainer.stop();
+    }
+
+    @BeforeEach
+    public void inserirDadosBasicos() {
+        PautaEntity.PautaEntityBuilder pautaEntity = PautaEntity.builder()
+                .titulo("Teste")
+                .descricao("Teste");
+
+        pautaRepository.save(pautaEntity.build());
+        pautaRepository.save(pautaEntity.build());
+        pautaRepository.save(pautaEntity.build());
+        pautaRepository.save(pautaEntity.build());
+        pautaRepository.save(pautaEntity.build());
+    }
+
     @Test
     @Order(1)
     void buscarPautas_200_quandoBuscarTodasAsPautas() {
-        var response = this.template.exchange(BASE_URL, GET, EMPTY, new ParameterizedTypeReference<ArrayList<PautaResponse>>() {
-        });
+        var response = this.template.exchange(BASE_URL, GET, EMPTY, PautaResponse[].class);
         var jsonEsperado = PautasFactory.getRetornoOk();
 
         assertThat(response)
@@ -53,7 +65,7 @@ class PautaControllerTest extends AbstractIT {
                 .isEqualTo(OK);
 
         assertThat(response.getBody())
-                .isNotNull().asList()
+                .isNotNull()
                 .hasSize(5)
                 .isEqualTo(jsonEsperado);
     }
@@ -63,8 +75,7 @@ class PautaControllerTest extends AbstractIT {
     void buscarPautas_200_quandoNaoHouverPautas() {
         List<PautaEntity> pautasBackup = pautaRepository.findAll();
         pautaRepository.deleteAll();
-        var response = this.template.exchange(BASE_URL, GET, EMPTY, new ParameterizedTypeReference<ArrayList<PautaResponse>>() {
-        });
+        var response = this.template.exchange(BASE_URL, GET, EMPTY, PautaResponse[].class);
 
         assertThat(response)
                 .isNotNull()
@@ -72,7 +83,7 @@ class PautaControllerTest extends AbstractIT {
                 .isEqualTo(OK);
 
         assertThat(response.getBody())
-                .isNotNull().asList()
+                .isNotNull()
                 .isEmpty();
 
         pautaRepository.saveAll(pautasBackup);
