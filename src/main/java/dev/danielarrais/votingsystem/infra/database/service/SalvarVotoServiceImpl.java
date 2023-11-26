@@ -2,8 +2,6 @@ package dev.danielarrais.votingsystem.infra.database.service;
 
 import dev.danielarrais.votingsystem.core.application.service.out.SalvarVotoService;
 import dev.danielarrais.votingsystem.core.domain.Voto;
-import dev.danielarrais.votingsystem.infra.database.entities.PautaEntity;
-import dev.danielarrais.votingsystem.infra.database.entities.VotoEntity;
 import dev.danielarrais.votingsystem.infra.database.mapper.VotoMapper;
 import dev.danielarrais.votingsystem.infra.database.repositories.VotoRepository;
 import lombok.RequiredArgsConstructor;

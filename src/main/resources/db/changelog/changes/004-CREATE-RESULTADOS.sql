@@ -5,5 +5,5 @@ create table resultados
     votos_favoraveis int         not null default 0,
     resultado        varchar(20) not null,
     pauta_id         int         null,
-    foreign key (pauta_id) references votos (id)
+    foreign key (pauta_id) references pautas(id)
 );

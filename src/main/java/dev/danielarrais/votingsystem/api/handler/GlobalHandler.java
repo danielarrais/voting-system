@@ -2,6 +2,7 @@ package dev.danielarrais.votingsystem.api.handler;
 
 import dev.danielarrais.votingsystem.api.dto.response.ErroResponse;
 import dev.danielarrais.votingsystem.core.application.exceptions.NegocioException;
+import dev.danielarrais.votingsystem.core.application.exceptions.PautaNaoEncontradaException;
 import dev.danielarrais.votingsystem.infra.exceptions.FalhaAoValidarCPFNoInvertextException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.Ordered;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Log4j2
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -52,6 +52,17 @@ public class GlobalHandler {
         log.error(ex.getMessage(), ex);
         return ErroResponse.builder()
                 .codigo(HttpStatus.BAD_REQUEST.value())
+                .mensagem(ex.getMessage())
+                .build();
+    }
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(PautaNaoEncontradaException.class)
+    public ErroResponse negocioExceptionHandler(PautaNaoEncontradaException ex) {
+        log.error(ex.getMessage(), ex);
+        return ErroResponse.builder()
+                .codigo(HttpStatus.NOT_FOUND.value())
                 .mensagem(ex.getMessage())
                 .build();
     }

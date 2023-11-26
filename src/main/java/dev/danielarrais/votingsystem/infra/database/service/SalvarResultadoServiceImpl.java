@@ -16,7 +16,7 @@ public class SalvarResultadoServiceImpl implements SalvarResultadoService {
 
     @Override
     public void salvar(Resultado resultado) {
-        var pautaEntity = pautaRepository.getReferenceById(resultado.getPautaId());
+        var pautaEntity = pautaRepository.findById(resultado.getPautaId()).get();
         var resultadoEntity = ResultadoMapper.convert(resultado);
 
         resultadoEntity.setPauta(pautaEntity);

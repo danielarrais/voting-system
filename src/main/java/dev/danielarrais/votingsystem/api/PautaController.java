@@ -3,22 +3,19 @@ package dev.danielarrais.votingsystem.api;
 import dev.danielarrais.votingsystem.api.dto.request.PautaRequest;
 import dev.danielarrais.votingsystem.api.dto.request.VotoRequest;
 import dev.danielarrais.votingsystem.api.dto.response.PautaResponse;
-import dev.danielarrais.votingsystem.api.mapper.SessaoMapper;
-import dev.danielarrais.votingsystem.core.application.service.in.*;
-import dev.danielarrais.votingsystem.core.application.service.in.impl.BuscarResultadoUseCaseImpl;
-import dev.danielarrais.votingsystem.core.application.service.in.impl.RegistrarVotoUserCaseImpl;
-import dev.danielarrais.votingsystem.core.domain.Pauta;
-import dev.danielarrais.votingsystem.core.domain.Resultado;
 import dev.danielarrais.votingsystem.api.mapper.PautaMapper;
+import dev.danielarrais.votingsystem.api.mapper.SessaoMapper;
 import dev.danielarrais.votingsystem.api.mapper.VotoMapper;
-import io.swagger.v3.oas.models.annotations.OpenAPI30;
+import dev.danielarrais.votingsystem.core.application.service.in.*;
+import dev.danielarrais.votingsystem.core.domain.Resultado;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/v1/pautas")
@@ -52,7 +49,7 @@ public class PautaController {
     }
 
     @PostMapping("/{pautaId}/votos")
-    @ResponseStatus(NO_CONTENT)
+    @ResponseStatus(CREATED)
     public void votar(@PathVariable(name = "pautaId") Long pautaId,
                       @Valid @RequestBody VotoRequest votoRequest) {
         registrarVotoUserCaseImpl.votar(VotoMapper.convert(pautaId, votoRequest));

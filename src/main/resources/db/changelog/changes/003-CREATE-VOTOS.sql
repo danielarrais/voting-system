@@ -5,5 +5,5 @@ create table votos
     hora     timestamp    not null,
     pauta_id int          not null,
     cpf      varchar(255) not null,
-    foreign key (pauta_id) references votos (id)
+    foreign key (pauta_id) references pautas (id)
 );

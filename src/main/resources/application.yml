@@ -18,6 +18,7 @@ spring:
     url: jdbc:mysql://${STACKHERO_MYSQL_HOST:localhost}:${STACKHERO_MYSQL_PORT:3306}/voting-system?createDatabaseIfNotExist=true&serverTimezone=UTC
     username: ${STACKHERO_MYSQL_USER:root}
     password: ${STACKHERO_MYSQL_ROOT_PASSWORD:pass}
+    driver-class-name: com.mysql.jdbc.Driver
 invert-text:
   base-url: https://api.invertexto.com/v1
   token: ${INVERTEXT_TOKEN}

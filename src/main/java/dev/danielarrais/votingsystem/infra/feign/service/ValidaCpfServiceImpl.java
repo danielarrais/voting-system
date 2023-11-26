@@ -1,9 +1,7 @@
 package dev.danielarrais.votingsystem.infra.feign.service;
 
-import dev.danielarrais.votingsystem.core.application.exceptions.PautaNaoEncontradaException;
 import dev.danielarrais.votingsystem.core.application.service.out.ValidaCpfService;
 import dev.danielarrais.votingsystem.infra.exceptions.FalhaAoValidarCPFNoInvertextException;
-import dev.danielarrais.votingsystem.infra.feign.CpfValido;
 import dev.danielarrais.votingsystem.infra.feign.InvertextClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

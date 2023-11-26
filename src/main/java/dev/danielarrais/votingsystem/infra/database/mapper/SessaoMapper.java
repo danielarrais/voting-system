@@ -1,6 +1,5 @@
 package dev.danielarrais.votingsystem.infra.database.mapper;
 
-import dev.danielarrais.votingsystem.core.domain.Pauta;
 import dev.danielarrais.votingsystem.core.domain.Sessao;
 import dev.danielarrais.votingsystem.infra.database.entities.PautaEntity;
 import dev.danielarrais.votingsystem.infra.database.entities.SessaoEntity;
