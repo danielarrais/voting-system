@@ -20,16 +20,11 @@ import dev.danielarrais.votingsystem.infra.feign.service.ValidaCpfServiceImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -39,9 +34,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.http.HttpStatus.*;
 
-@ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
-@Testcontainers
 class PautaControllerTest extends AbstractIT {
     private static final Integer DURACAO_PADRAO_SESSAO = 1;
     private static final String PAUTAS_URL = "/v1/pautas";
@@ -49,9 +41,6 @@ class PautaControllerTest extends AbstractIT {
     private static final String CRIAR_SESSOES_COM_DURACAO_URL = PAUTAS_URL + "/%d/sessoes?duracao=%d";
     private static final String VOTAR_URL = PAUTAS_URL + "/%d/votos";
     private static final String RESULTADOS_URL = PAUTAS_URL + "/%d/resultados";
-
-    @Autowired
-    private TestRestTemplate template;
 
     @Autowired
     private PautaRepository pautaRepository;
@@ -76,11 +65,12 @@ class PautaControllerTest extends AbstractIT {
     }
 
     @AfterEach
+    @Transactional
     public void removerDados() {
-        removerResultados();
-        removerVotos();
-        removerSessoes();
-        removerPautas();
+        resultadoRepository.deleteAll();
+        votoRepository.deleteAll();
+        sessaoRepository.deleteAll();
+        pautaRepository.deleteAll();
     }
 
     @Test
@@ -119,7 +109,7 @@ class PautaControllerTest extends AbstractIT {
     @Test
     void criarPauta_201_quandoCriaCorretante() {
         var pautaRequest = PautaRequest.builder().titulo("Teste").descricao("Teste").build();
-        var response = this.template.postForEntity(PAUTAS_URL, pautaRequest, String.class);
+        var response = this.template.postForEntity(PAUTAS_URL, pautaRequest, Void.class);
         var pautasRegistradas = pautaRepository.count();
 
         assertThat(response)
@@ -135,7 +125,7 @@ class PautaControllerTest extends AbstractIT {
     @Test
     void criarPauta_404_quandoNaoEnviaOTitulo() {
         var pautaRequest = PautaRequest.builder().descricao("Teste").build();
-        var response = this.template.postForEntity(PAUTAS_URL, pautaRequest, String.class);
+        var response = this.template.postForEntity(PAUTAS_URL, pautaRequest, Void.class);
 
         assertThat(response)
                 .isNotNull()
@@ -146,7 +136,7 @@ class PautaControllerTest extends AbstractIT {
     @Test
     void criarPauta_400_quandoNaoEnviaADescricao() {
         var pautaRequest = PautaRequest.builder().titulo("Teste").build();
-        var response = this.template.postForEntity(PAUTAS_URL, pautaRequest, String.class);
+        var response = this.template.postForEntity(PAUTAS_URL, pautaRequest, Void.class);
 
         assertThat(response)
                 .isNotNull()
@@ -158,7 +148,7 @@ class PautaControllerTest extends AbstractIT {
     void criarSessao_201_quandoCriaSessaoCorretante() {
         var idPauta = getIdDePautaValido();
         var url = String.format(CRIAR_SESSOES_URL, idPauta);
-        var response = this.template.postForEntity(url, null, String.class);
+        var response = this.template.postForEntity(url, null, Void.class);
 
         assertThat(response)
                 .isNotNull()
@@ -170,7 +160,7 @@ class PautaControllerTest extends AbstractIT {
     void criarSessao_201_comDuracaoPadraoDeUmMinuto() {
         var idPauta = getIdDePautaValido();
         var url = String.format(CRIAR_SESSOES_URL, idPauta);
-        var response = this.template.postForEntity(url, null, String.class);
+        var response = this.template.postForEntity(url, null, Void.class);
         var sessaoInserida = this.sessaoRepository.findByPautaId(idPauta);
         var dataDeEncerramento = sessaoInserida.get().getDataEncerramento();
         var dataDeInicio = sessaoInserida.get().getDataInicio();
@@ -189,7 +179,7 @@ class PautaControllerTest extends AbstractIT {
         var duracaoPauta = 30;
         var idPauta = getIdDePautaValido();
         var url = String.format(CRIAR_SESSOES_COM_DURACAO_URL, idPauta, duracaoPauta);
-        var response = this.template.postForEntity(url, null, String.class);
+        var response = this.template.postForEntity(url, null, Void.class);
         var sessaoInserida = this.sessaoRepository.findByPautaId(idPauta);
         var dataDeEncerramento = sessaoInserida.get().getDataEncerramento();
         var dataDeInicio = sessaoInserida.get().getDataInicio();
@@ -224,7 +214,7 @@ class PautaControllerTest extends AbstractIT {
         criarSessao(idPautaValido);
 
         var url = String.format(VOTAR_URL, idPautaValido);
-        var response = this.template.postForEntity(url, voto, String.class);
+        var response = this.template.postForEntity(url, voto, Void.class);
 
         assertThat(response)
                 .isNotNull()
@@ -292,7 +282,7 @@ class PautaControllerTest extends AbstractIT {
         criarSessao(idPautaValido);
 
         var url = String.format(VOTAR_URL, idPautaValido);
-        this.template.postForEntity(url, voto, String.class);
+        this.template.postForEntity(url, voto, Void.class);
         var responseErro = this.template.postForEntity(url, voto, ErroResponse.class).getBody();
 
         assertThat(responseErro)
@@ -374,7 +364,7 @@ class PautaControllerTest extends AbstractIT {
         Mockito.when(validaCpfService.cpfValido(any())).thenReturn(Boolean.TRUE);
         var idDePautaInvalido = getIdDePautaInvalido();
         var url = String.format(RESULTADOS_URL, idDePautaInvalido);
-        var resultado = this.template.getForEntity(url, String.class);
+        var resultado = this.template.getForEntity(url, Void.class);
 
         assertThat(resultado)
                 .isNotNull()
@@ -412,9 +402,9 @@ class PautaControllerTest extends AbstractIT {
         pautasInseridas.add(pautaRepository.save(pautaEntity.build()));
     }
 
-    private ResponseEntity<String> criarSessao(Long idPauta) {
+    private ResponseEntity<Void> criarSessao(Long idPauta) {
         var urlCriarSessao = String.format(CRIAR_SESSOES_URL, idPauta);
-        return this.template.postForEntity(urlCriarSessao, null, String.class);
+        return this.template.postForEntity(urlCriarSessao, null, Void.class);
     }
 
     private Resultado criarResultadoFavoravel(Long idPauta) {
@@ -423,9 +413,9 @@ class PautaControllerTest extends AbstractIT {
         var voto3 = VotoRequest.builder().voto(false).cpf("4234234236").build();
 
         var url = String.format(VOTAR_URL, idPauta);
-        this.template.postForEntity(url, voto1, String.class);;
-        this.template.postForEntity(url, voto2, String.class);;
-        this.template.postForEntity(url, voto3, String.class);;
+        this.template.postForEntity(url, voto1, Void.class);
+        this.template.postForEntity(url, voto2, Void.class);
+        this.template.postForEntity(url, voto3, Void.class);
 
         return Resultado.builder()
                 .resultado(ResultadoEnum.APROVADA.name())
@@ -441,9 +431,9 @@ class PautaControllerTest extends AbstractIT {
         var voto3 = VotoRequest.builder().voto(false).cpf("4234234236").build();
 
         var url = String.format(VOTAR_URL, idPauta);
-        this.template.postForEntity(url, voto1, String.class);;
-        this.template.postForEntity(url, voto2, String.class);;
-        this.template.postForEntity(url, voto3, String.class);;
+        this.template.postForEntity(url, voto1, Void.class);
+        this.template.postForEntity(url, voto2, Void.class);
+        this.template.postForEntity(url, voto3, Void.class);
 
         return Resultado.builder()
                 .resultado(ResultadoEnum.REPROVADA.name())
@@ -458,8 +448,8 @@ class PautaControllerTest extends AbstractIT {
         var voto2 = VotoRequest.builder().voto(false).cpf("4234234235").build();
 
         var url = String.format(VOTAR_URL, idPauta);
-        this.template.postForEntity(url, voto1, String.class);;
-        this.template.postForEntity(url, voto2, String.class);;
+        this.template.postForEntity(url, voto1, Void.class);
+        this.template.postForEntity(url, voto2, Void.class);
 
         return Resultado.builder()
                 .resultado(ResultadoEnum.EMPATADA.name())
@@ -478,32 +468,18 @@ class PautaControllerTest extends AbstractIT {
                 .build();
     }
 
-    private void removerPautas() {
-        pautaRepository.deleteAll();
-    }
-
-
     private void esperarSessaoEncerrar() throws InterruptedException {
-        Thread.sleep(61 * 1000); // 1 minuto
-    }
-
-    private void removerSessoes() {
-        sessaoRepository.deleteAll();
-    }
-
-    private void removerVotos() {
-        votoRepository.deleteAll();
-    }
-
-    private void removerResultados() {
-        resultadoRepository.deleteAll();
+        Thread.sleep(65 * 1000); // 1 minuto
     }
 
     private Long getIdDePautaInvalido() {
-        return pautasInseridas.stream().max(Comparator.comparing(PautaEntity::getId)).get().getId() + 1L;
+        return pautasInseridas.stream()
+                .max(Comparator.comparing(PautaEntity::getId))
+                .map(pauta -> pauta.getId() + 1L).orElse(1L);
     }
 
     private Long getIdDePautaValido() {
-        return pautasInseridas.stream().findAny().get().getId();
+        return pautasInseridas.stream().findAny()
+                .map(PautaEntity::getId).orElse(1L);
     }
 }
