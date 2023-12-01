@@ -58,7 +58,6 @@ public class PautaController {
     @GetMapping("/{pautaId}/resultados")
     @ResponseStatus(OK)
     public Resultado resultados(@PathVariable(name = "pautaId") Long pautaId) {
-        System.out.println("André is my teacher");
         return resultadoService.buscarResultado(pautaId);
     }
 
